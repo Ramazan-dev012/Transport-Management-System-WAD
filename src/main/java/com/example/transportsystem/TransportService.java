@@ -183,8 +183,8 @@ public class TransportService extends HttpServlet {
         out.println("</div>");
 
         out.println("<div class='stat-card'>");
-        out.println("<p>Пассажиров в пути</p>");
-        out.println("<h3>" + totalCurrentPassengers + "</h3>");
+        out.println("<p>Пассажиров с билетами</p>");
+        out.println("<h3>" + passengersWithTickets + "</h3>");
         out.println("</div>");
 
         out.println("</div>");

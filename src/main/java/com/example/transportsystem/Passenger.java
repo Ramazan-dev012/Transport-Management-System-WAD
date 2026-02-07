@@ -1,5 +1,6 @@
 package com.example.transportsystem;
 
+@SuppressWarnings("unused")
 public class Passenger {
     private int id;
     private String name;
@@ -22,7 +23,6 @@ public class Passenger {
         return id;
     }
 
-    @SuppressWarnings("unused")
     public void setId(int id) {
         this.id = id;
     }
@@ -31,7 +31,6 @@ public class Passenger {
         return name;
     }
 
-    @SuppressWarnings("unused")
     public void setName(String name) {
         this.name = name;
     }
@@ -40,7 +39,6 @@ public class Passenger {
         return phoneNumber;
     }
 
-    @SuppressWarnings("unused")
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
@@ -49,7 +47,6 @@ public class Passenger {
         return destination;
     }
 
-    @SuppressWarnings("unused")
     public void setDestination(String destination) {
         this.destination = destination;
     }

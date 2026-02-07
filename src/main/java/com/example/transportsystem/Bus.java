@@ -1,5 +1,6 @@
 package com.example.transportsystem;
 
+@SuppressWarnings("unused")
 public class Bus {
     private int id;
     private String routeNumber;
