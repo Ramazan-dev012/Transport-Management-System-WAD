@@ -1,67 +1,93 @@
-# Transport Management System - WAD
+# Transport Management System
 
-🚌 Система управления транспортом - веб-приложение на Jakarta EE
+Система управления транспортом - веб-приложение на Spring Boot.
 
-## 📋 Описание проекта
+## Описание проекта
 
-Transport Management System - это веб-приложение для управления автобусным парком, пассажирами и продажей билетов. Проект реализован с использованием Jakarta Servlets (doGet/doPost методы).
+Transport Management System - это веб-приложение для управления автобусным парком, пассажирами и продажей билетов. Проект реализован с использованием Spring Boot, Thymeleaf и REST API.
 
-## ✨ Функционал
+## Функционал
 
-- 🚌 **Управление автобусами**: добавление, просмотр, удаление автобусов
-- 👥 **Управление пассажирами**: регистрация пассажиров, просмотр списка
-- 🎫 **Продажа билетов**: покупка билетов для пассажиров на свободные места
-- 📊 **Статистика**: отображение данных о загруженности автобусов
-- 🎟️ **Просмотр билетов**: список свободных и заполненных автобусов
+- **Управление автобусами**: добавление, просмотр, удаление автобусов
+- **Управление пассажирами**: регистрация пассажиров, просмотр списка
+- **Продажа билетов**: покупка билетов для пассажиров на свободные места
+- **Просмотр билетов**: список свободных и заполненных автобусов
+- **REST API**: полноценный REST-интерфейс для работы с данными
 
-## 🛠️ Технологии
+## Технологии
 
-- **Java 11**
-- **Jakarta Servlet API 6.0**
+- **Java 21**
+- **Spring Boot 3.2**
+- **Thymeleaf** - шаблонизатор для HTML страниц
+- **Spring Web MVC** - веб-контроллеры
 - **Maven** - сборка проекта
 - **HTML/CSS** - интерфейс пользователя
-- **JSP** - главная страница
+- **Jakarta Servlet API** - сервлеты (doGet/doPost)
 
-## 📦 Структура проекта
+## Структура проекта
 
 ```
 src/
 ├── main/
 │   ├── java/com/example/transportsystem/
-│   │   ├── Bus.java              # Класс автобуса
-│   │   ├── Passenger.java        # Класс пассажира
-│   │   ├── TransportService.java # Главный сервлет (doGet/doPost)
-│   │   └── HelloServlet.java     # Тестовый сервлет
+│   │   ├── Bus.java                          # Класс автобуса
+│   │   ├── Passenger.java                    # Класс пассажира
+│   │   ├── TransportService.java             # Бизнес-логика (Servlet)
+│   │   ├── HelloServlet.java                 # Тестовый сервлет
+│   │   ├── TransportSystemApplication.java   # Точка входа Spring Boot
+│   │   ├── controller/
+│   │   │   ├── TransportController.java      # MVC контроллер (Thymeleaf)
+│   │   │   ├── TransportRestController.java  # REST API контроллер
+│   │   │   └── HelloController.java          # Тестовый контроллер
+│   │   └── service/
+│   │       └── TransportManagementService.java # Сервис управления данными
+│   ├── resources/
+│   │   ├── templates/                        # Thymeleaf HTML шаблоны
+│   │   ├── static/                           # Статические файлы (CSS, JS)
+│   │   └── application.properties            # Настройки приложения
 │   └── webapp/
-│       ├── index.jsp             # Главная страница
-│       └── WEB-INF/
-│           └── web.xml           # Конфигурация веб-приложения
+│       ├── index.jsp                         # JSP страница
+│       └── WEB-INF/web.xml                   # Конфигурация сервлетов
 ```
 
-## 🚀 Как запустить
+## Как запустить
 
 ### Требования
-- JDK 11 или выше
-- Apache Tomcat 10+ или другой Jakarta EE сервер
-- Maven
 
-### Сборка проекта
+- JDK 21 или выше
+- Maven (или использовать встроенный mvnw)
+
+### Запуск через Maven
 
 ```bash
-# Windows
-mvnw.cmd clean package
-
-# Linux/Mac
-./mvnw clean package
+mvnw.cmd spring-boot:run
 ```
 
-### Запуск
-1. Соберите проект командой выше
-2. Скопируйте файл `target/TransportSystem-1.0-SNAPSHOT.war` в папку `webapps` вашего Tomcat
-3. Запустите Tomcat
-4. Откройте в браузере: `http://localhost:8080/TransportSystem-1.0-SNAPSHOT/`
+### Запуск через bat-файл
 
-## 📝 HTTP методы (doGet/doPost)
+```bash
+run-spring-boot.bat
+```
+
+После запуска приложение доступно по адресу: `http://localhost:8080`
+
+## REST API
+
+Базовый URL: `http://localhost:8080/api/transport`
+
+| Метод | URL | Описание |
+|-------|-----|----------|
+| GET | /api/transport/buses | Получить все автобусы |
+| POST | /api/transport/buses | Создать автобус |
+| DELETE | /api/transport/buses/{id} | Удалить автобус |
+| GET | /api/transport/buses/available | Доступные автобусы |
+| GET | /api/transport/passengers | Получить всех пассажиров |
+| POST | /api/transport/passengers | Создать пассажира |
+| DELETE | /api/transport/passengers/{id} | Удалить пассажира |
+| POST | /api/transport/tickets | Купить билет |
+| GET | /api/transport/statistics | Статистика |
+
+## HTTP методы сервлетов (doGet/doPost)
 
 ### doGet - отображение данных
 - `?action=viewTickets` - просмотр билетов
@@ -78,25 +104,11 @@ mvnw.cmd clean package
 - `action=deleteBus` - удалить автобус
 - `action=deletePassenger` - удалить пассажира
 
-## 🎨 Интерфейс
-
-Современный адаптивный дизайн с использованием:
-- Градиентные цвета
-- Карточки (cards)
-- Адаптивная сетка (grid)
-- Интерактивные кнопки с эффектами hover
-- Статистические карточки
-
-## 👨‍💻 Автор
+## Автор
 
 **Ramazan**
 - GitHub: [@Ramazan-dev012](https://github.com/Ramazan-dev012)
 
-## 📄 Лицензия
+## Лицензия
 
-Этот проект создан в образовательных целях.
-
----
-
-⭐ Если проект был полезен, поставьте звезду на GitHub!
-
+Проект создан в образовательных целях в рамках курса Web Application Development (WAD).

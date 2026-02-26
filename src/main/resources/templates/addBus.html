@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Добавить автобус</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>🚌 Transport Management System</h1>
+
+<div class="container">
+    <div class="nav">
+        <a th:href="@{/transport}">🏠 Главная</a>
+        <a th:href="@{/transport/viewTickets}">🎫 Просмотр билетов</a>
+        <a th:href="@{/transport/buses}">🚌 Автобусы</a>
+        <a th:href="@{/transport/passengers}">👥 Пассажиры</a>
+        <a th:href="@{/}">← Назад</a>
+    </div>
+
+    <div class="card">
+        <h2>🚌 Добавить новый автобус</h2>
+        <div class="form-container">
+            <form method="post" th:action="@{/transport/buses/create}">
+                <label>Номер маршрута:</label>
+                <input type="text" name="routeNumber" placeholder="Например: 101" required/>
+
+                <label>Вместимость:</label>
+                <input type="number" name="capacity" placeholder="Количество мест" min="1" required/>
+
+                <label>Имя водителя:</label>
+                <input type="text" name="driverName" placeholder="Например: Иван Иванов" required/>
+
+                <div style="margin-top: 20px;">
+                    <button class="success" type="submit">✓ Создать автобус</button>
+                    <button class="secondary" type="button" onclick="location.href='/transport/buses'">← Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

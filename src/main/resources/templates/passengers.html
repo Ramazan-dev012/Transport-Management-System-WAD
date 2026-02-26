@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Список пассажиров</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>🚌 Transport Management System</h1>
+
+<div class="container">
+    <div class="nav">
+        <a th:href="@{/transport}">🏠 Главная</a>
+        <a th:href="@{/transport/viewTickets}">🎫 Просмотр билетов</a>
+        <a th:href="@{/transport/buses}">🚌 Автобусы</a>
+        <a th:href="@{/transport/passengers}">👥 Пассажиры</a>
+        <a th:href="@{/}">← Назад</a>
+    </div>
+
+    <div class="card">
+        <h2>👥 Список пассажиров</h2>
+        <button class="success" onclick="location.href='/transport/passengers/add'">➕ Добавить пассажира</button>
+
+        <div th:if="${#lists.isEmpty(passengers)}" class="empty-state">
+            <h3>Нет зарегистрированных пассажиров</h3>
+        </div>
+
+        <table th:unless="${#lists.isEmpty(passengers)}">
+            <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Телефон</th>
+                <th>Пункт назначения</th>
+                <th>Билет</th>
+                <th>Действия</th>
+            </tr>
+            <tr th:each="passenger : ${passengers}">
+                <td><strong th:text="'#' + ${passenger.id}">ID</strong></td>
+                <td th:text="${passenger.name}">Name</td>
+                <td th:text="${passenger.phoneNumber}">Phone</td>
+                <td th:text="${passenger.destination}">Destination</td>
+                <td>
+                    <span th:if="${passenger.hasTicket}" class="badge badge-success">✓ Куплен</span>
+                    <span th:unless="${passenger.hasTicket}" class="badge badge-warning">✗ Нет</span>
+                </td>
+                <td>
+                    <form method="post" th:action="@{/transport/passengers/delete}" style="display:inline;">
+                        <input type="hidden" name="passengerId" th:value="${passenger.id}"/>
+                        <button class="danger" type="submit" onclick="return confirm('Удалить пассажира?');">🗑️ Удалить</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Список автобусов</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>🚌 Transport Management System</h1>
+
+<div class="container">
+    <div class="nav">
+        <a th:href="@{/transport}">🏠 Главная</a>
+        <a th:href="@{/transport/viewTickets}">🎫 Просмотр билетов</a>
+        <a th:href="@{/transport/buses}">🚌 Автобусы</a>
+        <a th:href="@{/transport/passengers}">👥 Пассажиры</a>
+        <a th:href="@{/}">← Назад</a>
+    </div>
+
+    <div class="card">
+        <h2>🚌 Список автобусов</h2>
+        <button class="success" onclick="location.href='/transport/buses/add'">➕ Добавить автобус</button>
+
+        <div th:if="${#lists.isEmpty(buses)}" class="empty-state">
+            <h3>Нет зарегистрированных автобусов</h3>
+        </div>
+
+        <table th:unless="${#lists.isEmpty(buses)}">
+            <tr>
+                <th>ID</th>
+                <th>Маршрут</th>
+                <th>Вместимость</th>
+                <th>Водитель</th>
+                <th>Пассажиров</th>
+                <th>Статус</th>
+                <th>Действия</th>
+            </tr>
+            <tr th:each="bus : ${buses}">
+                <td><strong th:text="'#' + ${bus.id}">ID</strong></td>
+                <td th:text="'Маршрут ' + ${bus.routeNumber}">Route</td>
+                <td th:text="${bus.capacity} + ' мест'">Capacity</td>
+                <td th:text="${bus.driverName}">Driver</td>
+                <td th:text="${bus.currentPassengers} + ' / ' + ${bus.capacity}">Passengers</td>
+                <td>
+                    <span th:if="${bus.full}" class="badge badge-danger">Заполнен</span>
+                    <span th:unless="${bus.full}" class="badge badge-success">Места есть</span>
+                </td>
+                <td>
+                    <form method="post" th:action="@{/transport/buses/delete}" style="display:inline;">
+                        <input type="hidden" name="busId" th:value="${bus.id}"/>
+                        <button class="danger" type="submit" onclick="return confirm('Удалить автобус?');">🗑️ Удалить</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>
+

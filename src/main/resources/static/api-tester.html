@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST API Tester - Transport System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .api-tester {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .api-section {
+            margin-bottom: 20px;
+        }
+
+        .api-section h3 {
+            color: #764ba2;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-get {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-get:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-post {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .btn-post:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        #response {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 15px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 500px;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            font-size: 13px;
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .response-header h2 {
+            color: white;
+            border: none;
+            padding: 0;
+        }
+
+        .clear-btn {
+            background: #dc3545;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .status-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-error {
+            background: #dc3545;
+            color: white;
+        }
+
+        @media (max-width: 1200px) {
+            .api-tester {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚌 REST API Tester - Transport System</h1>
+
+        <div class="api-tester">
+            <!-- BUSES -->
+            <div class="card">
+                <h2>🚌 Автобусы (Buses)</h2>
+
+                <div class="api-section">
+                    <h3>Получить данные (GET)</h3>
+                    <div class="button-group">
+                        <button class="btn-get" onclick="apiCall('GET', '/api/transport/buses')">Все автобусы</button>
+                        <button class="btn-get" onclick="apiCall('GET', '/api/transport/buses/available')">Доступные</button>
+                        <button class="btn-get" onclick="apiCall('GET', '/api/transport/buses/full')">Полные</button>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h3>Создать автобус (POST)</h3>
+                    <div class="input-group">
+                        <label>Номер маршрута:</label>
+                        <input type="text" id="busRoute" placeholder="101" value="101">
+                    </div>
+                    <div class="input-group">
+                        <label>Вместимость:</label>
+                        <input type="number" id="busCapacity" placeholder="50" value="50">
+                    </div>
+                    <div class="input-group">
+                        <label>Имя водителя:</label>
+                        <input type="text" id="busDriver" placeholder="Иван Иванов" value="Иван Иванов">
+                    </div>
+                    <button class="btn-post" onclick="createBus()">Создать автобус</button>
+                </div>
+
+                <div class="api-section">
+                    <h3>Удалить автобус (DELETE)</h3>
+                    <div class="input-group">
+                        <label>ID автобуса:</label>
+                        <input type="number" id="deleteBusId" placeholder="1">
+                    </div>
+                    <button class="btn-delete" onclick="deleteBus()">Удалить</button>
+                </div>
+            </div>
+
+            <!-- PASSENGERS -->
+            <div class="card">
+                <h2>👥 Пассажиры (Passengers)</h2>
+
+                <div class="api-section">
+                    <h3>Получить данные (GET)</h3>
+                    <div class="button-group">
+                        <button class="btn-get" onclick="apiCall('GET', '/api/transport/passengers')">Все пассажиры</button>
+                        <button class="btn-get" onclick="apiCall('GET', '/api/transport/passengers/withTickets')">С билетами</button>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h3>Создать пассажира (POST)</h3>
+                    <div class="input-group">
+                        <label>Имя:</label>
+                        <input type="text" id="passengerName" placeholder="Алексей" value="Алексей">
+                    </div>
+                    <div class="input-group">
+                        <label>Телефон:</label>
+                        <input type="text" id="passengerPhone" placeholder="+77012345678" value="+77012345678">
+                    </div>
+                    <div class="input-group">
+                        <label>Направление:</label>
+                        <input type="text" id="passengerDestination" placeholder="Алматы" value="Алматы">
+                    </div>
+                    <button class="btn-post" onclick="createPassenger()">Создать пассажира</button>
+                </div>
+
+                <div class="api-section">
+                    <h3>Удалить пассажира (DELETE)</h3>
+                    <div class="input-group">
+                        <label>ID пассажира:</label>
+                        <input type="number" id="deletePassengerId" placeholder="1">
+                    </div>
+                    <button class="btn-delete" onclick="deletePassenger()">Удалить</button>
+                </div>
+            </div>
+
+            <!-- TICKETS -->
+            <div class="card">
+                <h2>🎫 Билеты (Tickets)</h2>
+
+                <div class="api-section">
+                    <h3>Купить билет (POST)</h3>
+                    <div class="input-group">
+                        <label>ID пассажира:</label>
+                        <input type="number" id="ticketPassengerId" placeholder="1">
+                    </div>
+                    <div class="input-group">
+                        <label>ID автобуса:</label>
+                        <input type="number" id="ticketBusId" placeholder="1">
+                    </div>
+                    <button class="btn-post" onclick="buyTicket()">Купить билет</button>
+                </div>
+            </div>
+
+            <!-- STATISTICS -->
+            <div class="card">
+                <h2>📊 Статистика (Statistics)</h2>
+
+                <div class="api-section">
+                    <h3>Получить статистику</h3>
+                    <button class="btn-get" onclick="apiCall('GET', '/api/transport/statistics')">📊 Общая статистика</button>
+                </div>
+
+                <div class="api-section">
+                    <h3>Быстрые действия</h3>
+                    <div class="button-group">
+                        <button class="btn-post" onclick="createTestData()">🔄 Создать тестовые данные</button>
+                        <button class="btn-get" onclick="apiCall('GET', '/api/transport/buses')">📋 Проверить автобусы</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESPONSE -->
+        <div class="card">
+            <div class="response-header">
+                <h2>📡 Ответ сервера</h2>
+                <button class="clear-btn" onclick="clearResponse()">Очистить</button>
+            </div>
+            <div id="response">Здесь будет отображаться ответ от сервера...</div>
+        </div>
+    </div>
+
+    <script>
+        const baseUrl = 'http://localhost:8080';
+
+        async function apiCall(method, endpoint, body = null) {
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = `⏳ Отправка запроса: ${method} ${endpoint}...\n`;
+
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+
+                if (body) {
+                    options.body = JSON.stringify(body);
+                }
+
+                const response = await fetch(baseUrl + endpoint, options);
+                const data = await response.json();
+
+                const statusClass = response.ok ? 'status-success' : 'status-error';
+                const statusText = `<span class="status ${statusClass}">HTTP ${response.status} ${response.statusText}</span>`;
+
+                responseDiv.innerHTML =
+                    `${statusText}\n\n` +
+                    `📍 Endpoint: ${method} ${endpoint}\n` +
+                    `⏱️ Время: ${new Date().toLocaleTimeString()}\n\n` +
+                    `📦 Ответ:\n${JSON.stringify(data, null, 2)}`;
+
+            } catch (error) {
+                responseDiv.innerHTML =
+                    `<span class="status status-error">❌ ОШИБКА</span>\n\n` +
+                    `Не удалось выполнить запрос:\n${error.message}`;
+            }
+        }
+
+        async function createBus() {
+            const routeNumber = document.getElementById('busRoute').value;
+            const capacity = parseInt(document.getElementById('busCapacity').value);
+            const driverName = document.getElementById('busDriver').value;
+
+            const body = {
+                routeNumber: routeNumber,
+                capacity: capacity,
+                driverName: driverName
+            };
+
+            await apiCall('POST', '/api/transport/buses', body);
+        }
+
+        async function deleteBus() {
+            const busId = document.getElementById('deleteBusId').value;
+            await apiCall('DELETE', `/api/transport/buses/${busId}`);
+        }
+
+        async function createPassenger() {
+            const name = document.getElementById('passengerName').value;
+            const phoneNumber = document.getElementById('passengerPhone').value;
+            const destination = document.getElementById('passengerDestination').value;
+
+            const body = {
+                name: name,
+                phoneNumber: phoneNumber,
+                destination: destination
+            };
+
+            await apiCall('POST', '/api/transport/passengers', body);
+        }
+
+        async function deletePassenger() {
+            const passengerId = document.getElementById('deletePassengerId').value;
+            await apiCall('DELETE', `/api/transport/passengers/${passengerId}`);
+        }
+
+        async function buyTicket() {
+            const passengerId = parseInt(document.getElementById('ticketPassengerId').value);
+            const busId = parseInt(document.getElementById('ticketBusId').value);
+
+            const body = {
+                passengerId: passengerId,
+                busId: busId
+            };
+
+            await apiCall('POST', '/api/transport/tickets', body);
+        }
+
+        async function createTestData() {
+            // Создаем 3 автобуса
+            await apiCall('POST', '/api/transport/buses', {
+                routeNumber: '100',
+                capacity: 50,
+                driverName: 'Иван Петров'
+            });
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            await apiCall('POST', '/api/transport/buses', {
+                routeNumber: '200',
+                capacity: 40,
+                driverName: 'Петр Сидоров'
+            });
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Создаем 2 пассажиров
+            await apiCall('POST', '/api/transport/passengers', {
+                name: 'Алексей Иванов',
+                phoneNumber: '+77012345678',
+                destination: 'Алматы'
+            });
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            await apiCall('POST', '/api/transport/passengers', {
+                name: 'Мария Петрова',
+                phoneNumber: '+77087654321',
+                destination: 'Астана'
+            });
+
+            document.getElementById('response').innerHTML += '\n\n✅ Тестовые данные созданы!';
+        }
+
+        function clearResponse() {
+            document.getElementById('response').innerHTML = 'Здесь будет отображаться ответ от сервера...';
+        }
+    </script>
+</body>
+</html>
+

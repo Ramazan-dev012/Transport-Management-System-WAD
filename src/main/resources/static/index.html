@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Transport System - Home</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>🚌 Transport Management System</h1>
+
+    <div class="card">
+        <h2>Добро пожаловать в систему управления транспортом!</h2>
+        <p style="font-size: 1.2em; color: #666; margin: 20px 0;">
+            Выберите действие для продолжения работы:
+        </p>
+
+        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 30px;">
+            <button class="info" onclick="location.href='/transport'">
+                🚀 Перейти к главной панели
+            </button>
+            <button onclick="location.href='/transport/buses'">
+                🚌 Управление автобусами
+            </button>
+            <button onclick="location.href='/transport/passengers'">
+                👥 Управление пассажирами
+            </button>
+            <button class="success" onclick="location.href='/transport/buyTicket'">
+                🎫 Купить билет
+            </button>
+            <button class="warning" onclick="window.open('/api-tester.html', '_blank')">
+                🔌 REST API Tester
+            </button>
+            <button onclick="location.href='/hello-servlet'">
+                👋 Hello Servlet
+            </button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📋 О системе</h2>
+        <p style="color: #666; line-height: 1.8;">
+            Эта система позволяет управлять автобусами, пассажирами и билетами.
+            Вы можете добавлять новые автобусы и пассажиров, покупать билеты и отслеживать
+            загруженность транспорта в реальном времени.
+        </p>
+    </div>
+</div>
+</body>
+</html>
+

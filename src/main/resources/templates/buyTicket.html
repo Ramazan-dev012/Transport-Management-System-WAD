@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Купить билет</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>🚌 Transport Management System</h1>
+
+<div class="container">
+    <div class="nav">
+        <a th:href="@{/transport}">🏠 Главная</a>
+        <a th:href="@{/transport/viewTickets}">🎫 Просмотр билетов</a>
+        <a th:href="@{/transport/buses}">🚌 Автобусы</a>
+        <a th:href="@{/transport/passengers}">👥 Пассажиры</a>
+        <a th:href="@{/}">← Назад</a>
+    </div>
+
+    <div class="card">
+        <h2>🎫 Купить билет на автобус</h2>
+
+        <div th:if="${#lists.isEmpty(passengers)}" class="empty-state">
+            <h3>Нет зарегистрированных пассажиров</h3>
+            <p>Сначала добавьте пассажира</p>
+            <button class="success" onclick="location.href='/transport/passengers/add'">➕ Добавить пассажира</button>
+        </div>
+
+        <div th:if="${#lists.isEmpty(buses) and !#lists.isEmpty(passengers)}" class="empty-state">
+            <h3>Нет доступных автобусов</h3>
+            <p>Сначала добавьте автобус</p>
+            <button class="success" onclick="location.href='/transport/buses/add'">➕ Добавить автобус</button>
+        </div>
+
+        <div th:if="${!#lists.isEmpty(passengers) and !#lists.isEmpty(buses)}" class="form-container">
+            <form method="post" th:action="@{/transport/buyTicket}">
+                <label>Выберите пассажира:</label>
+                <select name="passengerId" required>
+                    <option th:each="passenger : ${passengers}"
+                            th:value="${passenger.id}"
+                            th:text="${passenger.name} + ' - ' + ${passenger.destination} + ${passenger.hasTicket ? ' (уже есть билет)' : ''}">
+                    </option>
+                </select>
+
+                <label>Выберите автобус:</label>
+                <select name="busId" required>
+                    <option th:each="bus : ${buses}"
+                            th:value="${bus.id}"
+                            th:disabled="${bus.full}"
+                            th:text="'Маршрут ' + ${bus.routeNumber} + ' - ' + ${bus.driverName} + ${bus.full ? ' (ЗАПОЛНЕН)' : ' (' + (bus.capacity - bus.currentPassengers) + ' мест)'}">
+                    </option>
+                </select>
+
+                <p style="color: #667eea; font-size: 14px; margin-top: 15px;">
+                    💡 Билет будет куплен, и пассажир будет добавлен в автобус
+                </p>
+
+                <div style="margin-top: 20px;">
+                    <button class="info" type="submit">🎫 Купить билет</button>
+                    <button class="secondary" type="button" onclick="location.href='/transport'">← Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Transport Management System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>🚌 Transport Management System</h1>
+
+<div class="container">
+    <div class="nav">
+        <a th:href="@{/transport}">🏠 Главная</a>
+        <a th:href="@{/transport/viewTickets}">🎫 Просмотр билетов</a>
+        <a th:href="@{/transport/buses}">🚌 Автобусы</a>
+        <a th:href="@{/transport/passengers}">👥 Пассажиры</a>
+        <a href="/api-tester.html" target="_blank">🔌 REST API</a>
+        <a th:href="@{/}">← Назад</a>
+    </div>
+
+    <div class="card">
+        <h2>📊 Статистика системы</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <p>Всего автобусов</p>
+                <h3 th:text="${#lists.size(buses)}">0</h3>
+            </div>
+            <div class="stat-card">
+                <p>Всего пассажиров</p>
+                <h3 th:text="${#lists.size(passengers)}">0</h3>
+            </div>
+            <div class="stat-card">
+                <p>Общая вместимость</p>
+                <h3 th:text="${totalCapacity}">0</h3>
+            </div>
+            <div class="stat-card">
+                <p>Пассажиров с билетами</p>
+                <h3 th:text="${passengersWithTickets}">0</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>⚡ Быстрые действия</h2>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="info" onclick="location.href='/transport/buyTicket'">🎫 Купить билет</button>
+            <button class="success" onclick="location.href='/transport/buses/add'">➕ Добавить автобус</button>
+            <button class="success" onclick="location.href='/transport/passengers/add'">➕ Добавить пассажира</button>
+            <button onclick="location.href='/transport/viewTickets'">📋 Просмотр билетов</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Просмотр билетов</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>🚌 Transport Management System</h1>
+
+<div class="container">
+    <div class="nav">
+        <a th:href="@{/transport}">🏠 Главная</a>
+        <a th:href="@{/transport/viewTickets}">🎫 Просмотр билетов</a>
+        <a th:href="@{/transport/buses}">🚌 Автобусы</a>
+        <a th:href="@{/transport/passengers}">👥 Пассажиры</a>
+        <a th:href="@{/}">← Назад</a>
+    </div>
+
+    <div class="card">
+        <h2>🎫 Просмотр билетов и свободных автобусов</h2>
+        <div class="stats-grid">
+            <div class="stat-card" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);">
+                <p>Свободные автобусы</p>
+                <h3 th:text="${availableBusesCount}">0</h3>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #f44336 0%, #e91e63 100%);">
+                <p>Заполненные автобусы</p>
+                <h3 th:text="${fullBusesCount}">0</h3>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #2196F3 0%, #03A9F4 100%);">
+                <p>Куплено билетов</p>
+                <h3 th:text="${ticketsCount}">0</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Available Buses -->
+    <div class="card">
+        <h2>🚌 Свободные автобусы</h2>
+        <div th:if="${#lists.isEmpty(availableBuses)}" class="empty-state">
+            <h3>😔 Нет свободных автобусов</h3>
+            <p>Все автобусы заполнены или отсутствуют в системе</p>
+            <button onclick="location.href='/transport/buses/add'">Добавить автобус</button>
+        </div>
+        <div th:unless="${#lists.isEmpty(availableBuses)}" class="grid-2">
+            <div th:each="bus : ${availableBuses}" class="ticket-card bus-available">
+                <h3 th:text="'🚌 Маршрут ' + ${bus.routeNumber}">Маршрут</h3>
+                <p><strong>Водитель:</strong> <span th:text="${bus.driverName}">Driver</span></p>
+                <p>
+                    <strong>Свободных мест:</strong>
+                    <span class="badge badge-success" th:text="${bus.capacity - bus.currentPassengers} + ' из ' + ${bus.capacity}">0 из 0</span>
+                </p>
+                <p th:text="'Загруженность: ' + ${#numbers.formatDecimal((bus.currentPassengers * 100.0) / bus.capacity, 1, 1)} + '%'">Загруженность</p>
+                <div style="margin-top: 10px;">
+                    <button class="info" onclick="location.href='/transport/buyTicket'">Купить билет</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Passengers with Tickets -->
+    <div class="card">
+        <h2>🎟️ Купленные билеты</h2>
+        <div th:if="${#lists.isEmpty(passengersWithTickets)}" class="empty-state">
+            <h3>📭 Нет купленных билетов</h3>
+            <p>Ни один пассажир еще не купил билет</p>
+            <button class="info" onclick="location.href='/transport/buyTicket'">Купить билет</button>
+        </div>
+        <table th:unless="${#lists.isEmpty(passengersWithTickets)}">
+            <tr>
+                <th>Пассажир</th>
+                <th>Телефон</th>
+                <th>Пункт назначения</th>
+                <th>Статус билета</th>
+            </tr>
+            <tr th:each="passenger : ${passengersWithTickets}">
+                <td><strong th:text="${passenger.name}">Name</strong></td>
+                <td th:text="${passenger.phoneNumber}">Phone</td>
+                <td th:text="${passenger.destination}">Destination</td>
+                <td><span class="badge badge-success">✓ Оплачен</span></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Full Buses -->
+    <div th:unless="${#lists.isEmpty(fullBuses)}" class="card">
+        <h2>🔴 Заполненные автобусы</h2>
+        <div class="grid-2">
+            <div th:each="bus : ${fullBuses}" class="ticket-card bus-full">
+                <h3 th:text="'🚌 Маршрут ' + ${bus.routeNumber}">Маршрут</h3>
+                <p><strong>Водитель:</strong> <span th:text="${bus.driverName}">Driver</span></p>
+                <p><strong>Статус:</strong> <span class="badge badge-danger">ЗАПОЛНЕН</span></p>
+                <p th:text="'Пассажиров: ' + ${bus.currentPassengers} + ' / ' + ${bus.capacity}">Passengers</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

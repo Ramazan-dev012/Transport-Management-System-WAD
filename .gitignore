@@ -51,3 +51,9 @@ replay_pid*
 .DS_Store
 Thumbs.db
 
+# Documentation files (not needed in repo)
+README-SPRING-BOOT.md
+REST-API-DOCUMENTATION.md
+REST-API-QUICK-START.md
+SPRING-BOOT-CHEATSHEET.md
+SPRING-BOOT-SETUP.html

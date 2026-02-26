@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <h1 th:text="${message}">Hello World!</h1>
+        <button onclick="location.href='/transport'">← Назад к главной</button>
+    </div>
+</div>
+</body>
+</html>
+
