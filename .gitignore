@@ -57,3 +57,7 @@ REST-API-DOCUMENTATION.md
 REST-API-QUICK-START.md
 SPRING-BOOT-CHEATSHEET.md
 SPRING-BOOT-SETUP.html
+
+# Utility scripts (not needed in repo)
+check-compilation.bat
+
