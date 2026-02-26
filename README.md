@@ -1,12 +1,12 @@
-# 🚌 Transport Management System
+# Transport Management System
 
 Веб-приложение для управления транспортной системой с авторизацией пользователей.
 
-## 📝 Описание
+## Описание
 
 Transport Management System - это современное веб-приложение на Spring Boot для управления автобусным парком, пассажирами и продажей билетов. Система включает авторизацию пользователей, защищённые страницы и REST API.
 
-## ✨ Функционал
+## Функционал
 
 ### Публичный доступ (без авторизации):
 - Просмотр главной страницы со статистикой
@@ -26,7 +26,7 @@ Transport Management System - это современное веб-прилож�
 - Защита паролей (BCrypt)
 - Роли пользователей
 
-## 🛠 Технологии
+## Технологии
 
 - **Java 17**
 - **Spring Boot 3.2.0**
@@ -37,7 +37,7 @@ Transport Management System - это современное веб-прилож�
 - **Maven** - сборка проекта
 - **HTML/CSS** - современный UI
 
-## 🚀 Быстрый старт
+## Быстрый старт
 
 ### Требования:
 - Java JDK 17 или выше
@@ -65,7 +65,7 @@ mvnw spring-boot:run
 http://localhost:8080/transport
 ```
 
-## 📂 Структура проекта
+## Структура проекта
 
 ```
 src/main/java/com/example/transportsystem/
@@ -106,7 +106,7 @@ src/main/resources/
 └── application.properties                  # Конфигурация приложения
 ```
 
-## 🔐 Авторизация
+## Авторизация
 
 ### Регистрация:
 1. Перейдите на `/auth/register`
@@ -123,7 +123,7 @@ src/main/resources/
 - 3 тестовых автобуса
 - 2 тестовых пассажира
 
-## 🌐 Доступные URL
+## Доступные URL
 
 | URL | Описание |
 |-----|----------|
@@ -140,7 +140,7 @@ src/main/resources/
 | `/h2-console` | H2 Console (БД) |
 | `/api/transport/**` | REST API endpoints |
 
-## 🔧 Конфигурация
+## Конфигурация
 
 ### База данных (H2):
 ```properties
@@ -156,7 +156,7 @@ server.port=8080
 
 Для изменения порта отредактируйте `application.properties`.
 
-## 📊 REST API
+## REST API
 
 ### Автобусы:
 - `GET /api/transport/buses` - список всех автобусов
@@ -171,7 +171,7 @@ server.port=8080
 ### Билеты:
 - `POST /api/transport/tickets/buy` - купить билет
 
-## 🎨 Скриншоты
+## Скриншоты
 
 ### Главная страница
 Отображает статистику системы: количество автобусов, пассажиров, общую вместимость.
@@ -182,19 +182,11 @@ server.port=8080
 ### Управление автобусами
 Просмотр, добавление и удаление автобусов с отображением загруженности.
 
-## 🤝 Вклад в проект
-
-1. Fork проекта
-2. Создайте feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit изменений (`git commit -m 'Add some AmazingFeature'`)
-4. Push в branch (`git push origin feature/AmazingFeature`)
-5. Откройте Pull Request
-
-## 📝 Лицензия
+## Лицензия
 
 Этот проект создан в образовательных целях.
 
-## 👨‍💻 Автор
+## Автор
 
 **Ramazan**
 - GitHub: [@Ramazan-dev012](https://github.com/Ramazan-dev012)
