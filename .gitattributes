@@ -1,0 +1,8 @@
+# Tell GitHub to ignore these files when calculating language statistics
+src/main/resources/templates/*.html linguist-detectable=false
+src/main/resources/static/*.html linguist-detectable=false
+src/main/resources/static/css/*.css linguist-detectable=false
+src/main/webapp/*.jsp linguist-detectable=false
+*.html linguist-detectable=false
+*.css linguist-detectable=false
+
