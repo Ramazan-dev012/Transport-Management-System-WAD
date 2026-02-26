@@ -1,14 +1,11 @@
 package com.example.transportsystem.controller;
 
-import com.example.transportsystem.Bus;
-import com.example.transportsystem.Passenger;
 import com.example.transportsystem.service.TransportManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Controller
 @RequestMapping("/transport")

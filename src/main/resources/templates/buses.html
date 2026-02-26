@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Список автобусов</title>
@@ -15,6 +16,14 @@
         <a th:href="@{/transport/buses}">🚌 Автобусы</a>
         <a th:href="@{/transport/passengers}">👥 Пассажиры</a>
         <a th:href="@{/}">← Назад</a>
+        <span sec:authorize="isAuthenticated()" style="margin-left:auto; display:flex; align-items:center; gap:10px;">
+            <span style="color:#a0aec0; font-size:14px;">👤 <span sec:authentication="name"></span></span>
+            <a th:href="@{/auth/logout}" style="background:#e53e3e; color:#fff; padding:6px 14px; border-radius:8px; text-decoration:none; font-size:13px; font-weight:600;">Выйти</a>
+        </span>
+        <span sec:authorize="isAnonymous()" style="margin-left:auto; display:flex; align-items:center; gap:8px;">
+            <a th:href="@{/auth/login}" style="background:#667eea; color:#fff; padding:6px 14px; border-radius:8px; text-decoration:none; font-size:13px; font-weight:600;">Войти</a>
+            <a th:href="@{/auth/register}" style="background:#48bb78; color:#fff; padding:6px 14px; border-radius:8px; text-decoration:none; font-size:13px; font-weight:600;">Регистрация</a>
+        </span>
     </div>
 
     <div class="card">

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Просмотр билетов</title>
@@ -15,6 +16,14 @@
         <a th:href="@{/transport/buses}">🚌 Автобусы</a>
         <a th:href="@{/transport/passengers}">👥 Пассажиры</a>
         <a th:href="@{/}">← Назад</a>
+        <span sec:authorize="isAuthenticated()" style="margin-left:auto; display:flex; align-items:center; gap:10px;">
+            <span style="color:#a0aec0; font-size:14px;">👤 <span sec:authentication="name"></span></span>
+            <a th:href="@{/auth/logout}" style="background:#e53e3e; color:#fff; padding:6px 14px; border-radius:8px; text-decoration:none; font-size:13px; font-weight:600;">Выйти</a>
+        </span>
+        <span sec:authorize="isAnonymous()" style="margin-left:auto; display:flex; align-items:center; gap:8px;">
+            <a th:href="@{/auth/login}" style="background:#667eea; color:#fff; padding:6px 14px; border-radius:8px; text-decoration:none; font-size:13px; font-weight:600;">Войти</a>
+            <a th:href="@{/auth/register}" style="background:#48bb78; color:#fff; padding:6px 14px; border-radius:8px; text-decoration:none; font-size:13px; font-weight:600;">Регистрация</a>
+        </span>
     </div>
 
     <div class="card">
@@ -53,7 +62,8 @@
                 </p>
                 <p th:text="'Загруженность: ' + ${#numbers.formatDecimal((bus.currentPassengers * 100.0) / bus.capacity, 1, 1)} + '%'">Загруженность</p>
                 <div style="margin-top: 10px;">
-                    <button class="info" onclick="location.href='/transport/buyTicket'">Купить билет</button>
+                    <button class="info" sec:authorize="isAuthenticated()" onclick="location.href='/transport/buyTicket'">Купить билет</button>
+                    <button class="info" sec:authorize="isAnonymous()" onclick="location.href='/auth/login'">Купить билет</button>
                 </div>
             </div>
         </div>
@@ -65,7 +75,8 @@
         <div th:if="${#lists.isEmpty(passengersWithTickets)}" class="empty-state">
             <h3>📭 Нет купленных билетов</h3>
             <p>Ни один пассажир еще не купил билет</p>
-            <button class="info" onclick="location.href='/transport/buyTicket'">Купить билет</button>
+            <button class="info" sec:authorize="isAuthenticated()" onclick="location.href='/transport/buyTicket'">Купить билет</button>
+            <button class="info" sec:authorize="isAnonymous()" onclick="location.href='/auth/login'">Купить билет</button>
         </div>
         <table th:unless="${#lists.isEmpty(passengersWithTickets)}">
             <tr>

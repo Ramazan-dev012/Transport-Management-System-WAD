@@ -1,54 +1,211 @@
-# Transport Management System
+# 🚌 Transport Management System
 
-Система управления транспортом - веб-приложение на Spring Boot.
+Веб-приложение для управления транспортной системой с авторизацией пользователей.
 
-## Описание проекта
+## 📝 Описание
 
-Transport Management System - это веб-приложение для управления автобусным парком, пассажирами и продажей билетов. Проект реализован с использованием Spring Boot, Thymeleaf и REST API.
+Transport Management System - это современное веб-приложение на Spring Boot для управления автобусным парком, пассажирами и продажей билетов. Система включает авторизацию пользователей, защищённые страницы и REST API.
 
-## Функционал
+## ✨ Функционал
 
-- **Управление автобусами**: добавление, просмотр, удаление автобусов
-- **Управление пассажирами**: регистрация пассажиров, просмотр списка
-- **Продажа билетов**: покупка билетов для пассажиров на свободные места
-- **Просмотр билетов**: список свободных и заполненных автобусов
-- **REST API**: полноценный REST-интерфейс для работы с данными
+### Публичный доступ (без авторизации):
+- Просмотр главной страницы со статистикой
+- Просмотр списка автобусов
+- Просмотр списка пассажиров
+- Просмотр билетов и свободных мест
 
-## Технологии
+### Требует авторизации:
+- Покупка билетов
+- Добавление автобусов
+- Добавление пассажиров
+- Управление данными
 
-- **Java 21**
-- **Spring Boot 3.2**
-- **Thymeleaf** - шаблонизатор для HTML страниц
-- **Spring Web MVC** - веб-контроллеры
+### Авторизация:
+- Регистрация новых пользователей
+- Вход в систему
+- Защита паролей (BCrypt)
+- Роли пользователей
+
+## 🛠 Технологии
+
+- **Java 17**
+- **Spring Boot 3.2.0**
+- **Spring Security** - авторизация и аутентификация
+- **Spring Data JPA** - работа с базой данных
+- **H2 Database** - встроенная база данных
+- **Thymeleaf** - шаблонизатор HTML
 - **Maven** - сборка проекта
-- **HTML/CSS** - интерфейс пользователя
-- **Jakarta Servlet API** - сервлеты (doGet/doPost)
+- **HTML/CSS** - современный UI
 
-## Структура проекта
+## 🚀 Быстрый старт
+
+### Требования:
+- Java JDK 17 или выше
+- Maven (или используйте встроенный Maven Wrapper)
+
+### Запуск:
+
+1. **Клонируйте репозиторий:**
+```bash
+git clone https://github.com/Ramazan-dev012/Transport-Management-System-WAD.git
+cd Transport-Management-System-WAD
+```
+
+2. **Запустите приложение:**
+```bash
+mvnw spring-boot:run
+```
+
+Или через IDE (IntelliJ IDEA):
+- Откройте проект
+- Запустите `TransportSystemApplication.java`
+
+3. **Откройте в браузере:**
+```
+http://localhost:8080/transport
+```
+
+## 📂 Структура проекта
 
 ```
-src/
-├── main/
-│   ├── java/com/example/transportsystem/
-│   │   ├── Bus.java                          # Класс автобуса
-│   │   ├── Passenger.java                    # Класс пассажира
-│   │   ├── TransportService.java             # Бизнес-логика (Servlet)
-│   │   ├── HelloServlet.java                 # Тестовый сервлет
-│   │   ├── TransportSystemApplication.java   # Точка входа Spring Boot
-│   │   ├── controller/
-│   │   │   ├── TransportController.java      # MVC контроллер (Thymeleaf)
-│   │   │   ├── TransportRestController.java  # REST API контроллер
-│   │   │   └── HelloController.java          # Тестовый контроллер
-│   │   └── service/
-│   │       └── TransportManagementService.java # Сервис управления данными
-│   ├── resources/
-│   │   ├── templates/                        # Thymeleaf HTML шаблоны
-│   │   ├── static/                           # Статические файлы (CSS, JS)
-│   │   └── application.properties            # Настройки приложения
-│   └── webapp/
-│       ├── index.jsp                         # JSP страница
-│       └── WEB-INF/web.xml                   # Конфигурация сервлетов
+src/main/java/com/example/transportsystem/
+├── model/
+│   └── User.java                           # Модель пользователя (JPA Entity)
+├── repository/
+│   └── UserRepository.java                 # JPA Repository для пользователей
+├── service/
+│   ├── TransportManagementService.java     # Бизнес-логика транспорта
+│   ├── AuthService.java                    # Сервис регистрации
+│   └── CustomUserDetailsService.java       # Spring Security UserDetails
+├── config/
+│   └── SecurityConfig.java                 # Конфигурация Spring Security
+├── controller/
+│   ├── HomeController.java                 # Главный контроллер
+│   ├── AuthController.java                 # Контроллер авторизации
+│   ├── TransportController.java            # MVC контроллер (Thymeleaf)
+│   └── TransportRestController.java        # REST API контроллер
+├── Bus.java                                # Модель автобуса
+├── Passenger.java                          # Модель пассажира
+└── TransportSystemApplication.java         # Main класс Spring Boot
+
+src/main/resources/
+├── templates/
+│   ├── auth/
+│   │   ├── login.html                      # Страница входа
+│   │   └── register.html                   # Страница регистрации
+│   ├── main.html                           # Главная страница
+│   ├── buses.html                          # Список автобусов
+│   ├── passengers.html                     # Список пассажиров
+│   ├── viewTickets.html                    # Просмотр билетов
+│   ├── buyTicket.html                      # Покупка билета
+│   ├── addBus.html                         # Добавление автобуса
+│   └── addPassenger.html                   # Добавление пассажира
+├── static/
+│   ├── css/style.css                       # Стили
+│   └── api-tester.html                     # Тестер REST API
+└── application.properties                  # Конфигурация приложения
 ```
+
+## 🔐 Авторизация
+
+### Регистрация:
+1. Перейдите на `/auth/register`
+2. Заполните форму (логин, email, пароль)
+3. Нажмите "Создать аккаунт"
+
+### Вход:
+1. Перейдите на `/auth/login`
+2. Введите логин и пароль
+3. Нажмите "Войти"
+
+### Тестовые данные:
+При первом запуске в базе данных автоматически создаются:
+- 3 тестовых автобуса
+- 2 тестовых пассажира
+
+## 🌐 Доступные URL
+
+| URL | Описание |
+|-----|----------|
+| `/` | Редирект на главную страницу |
+| `/transport` | Главная страница со статистикой |
+| `/auth/login` | Вход в систему |
+| `/auth/register` | Регистрация |
+| `/transport/buses` | Список автобусов |
+| `/transport/buses/add` | Добавить автобус (требует авторизации) |
+| `/transport/passengers` | Список пассажиров |
+| `/transport/passengers/add` | Добавить пассажира (требует авторизации) |
+| `/transport/viewTickets` | Просмотр билетов |
+| `/transport/buyTicket` | Купить билет (требует авторизации) |
+| `/h2-console` | H2 Console (БД) |
+| `/api/transport/**` | REST API endpoints |
+
+## 🔧 Конфигурация
+
+### База данных (H2):
+```properties
+spring.datasource.url=jdbc:h2:mem:transportdb
+spring.datasource.username=sa
+spring.datasource.password=
+```
+
+### Порт сервера:
+```properties
+server.port=8080
+```
+
+Для изменения порта отредактируйте `application.properties`.
+
+## 📊 REST API
+
+### Автобусы:
+- `GET /api/transport/buses` - список всех автобусов
+- `POST /api/transport/buses` - добавить автобус
+- `DELETE /api/transport/buses/{id}` - удалить автобус
+
+### Пассажиры:
+- `GET /api/transport/passengers` - список всех пассажиров
+- `POST /api/transport/passengers` - добавить пассажира
+- `DELETE /api/transport/passengers/{id}` - удалить пассажира
+
+### Билеты:
+- `POST /api/transport/tickets/buy` - купить билет
+
+## 🎨 Скриншоты
+
+### Главная страница
+Отображает статистику системы: количество автобусов, пассажиров, общую вместимость.
+
+### Страница авторизации
+Современный дизайн с градиентным фоном и стеклянным эффектом.
+
+### Управление автобусами
+Просмотр, добавление и удаление автобусов с отображением загруженности.
+
+## 🤝 Вклад в проект
+
+1. Fork проекта
+2. Создайте feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit изменений (`git commit -m 'Add some AmazingFeature'`)
+4. Push в branch (`git push origin feature/AmazingFeature`)
+5. Откройте Pull Request
+
+## 📝 Лицензия
+
+Этот проект создан в образовательных целях.
+
+## 👨‍💻 Автор
+
+**Ramazan**
+- GitHub: [@Ramazan-dev012](https://github.com/Ramazan-dev012)
+
+## 📧 Контакты
+
+Если у вас есть вопросы или предложения, создайте Issue в репозитории.
+
+---
+
+⭐ Если проект был полезен, поставьте звезду!
 
 ## Как запустить
 
