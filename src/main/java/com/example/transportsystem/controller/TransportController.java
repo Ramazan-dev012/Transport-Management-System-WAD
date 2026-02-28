@@ -31,6 +31,7 @@ public class TransportController {
         model.addAttribute("availableBuses", service.getAvailableBuses());
         model.addAttribute("fullBuses", service.getFullBuses());
         model.addAttribute("passengersWithTickets", service.getPassengersWithTickets());
+        model.addAttribute("allTickets", service.getAllTickets());
         model.addAttribute("availableBusesCount", service.getAvailableBuses().size());
         model.addAttribute("fullBusesCount", service.getFullBuses().size());
         model.addAttribute("ticketsCount", service.getPassengersWithTicketsCount());
@@ -61,7 +62,7 @@ public class TransportController {
 
 
     @PostMapping("/buses/delete")
-    public String deleteBus(@RequestParam int busId) {
+    public String deleteBus(@RequestParam Long busId) {
         service.deleteBus(busId);
         return "redirect:/transport/buses";
     }
@@ -90,7 +91,7 @@ public class TransportController {
 
 
     @PostMapping("/passengers/delete")
-    public String deletePassenger(@RequestParam int passengerId) {
+    public String deletePassenger(@RequestParam Long passengerId) {
         service.deletePassenger(passengerId);
         return "redirect:/transport/passengers";
     }
@@ -99,16 +100,22 @@ public class TransportController {
     @GetMapping("/buyTicket")
     public String buyTicketForm(Model model) {
         model.addAttribute("passengers", service.getAllPassengers());
-        model.addAttribute("buses", service.getAllBuses());
+        model.addAttribute("buses", service.getAvailableBuses());
         return "buyTicket";
     }
 
 
     @PostMapping("/buyTicket")
-    public String buyTicket(@RequestParam int passengerId,
-                           @RequestParam int busId) {
-        service.buyTicket(passengerId, busId);
+    public String buyTicket(@RequestParam Long passengerId,
+                           @RequestParam Long busId,
+                           Model model) {
+        boolean success = service.buyTicket(passengerId, busId);
+        if (!success) {
+            model.addAttribute("error", "Не удалось купить билет. Автобус заполнен или данные неверны.");
+            model.addAttribute("passengers", service.getAllPassengers());
+            model.addAttribute("buses", service.getAvailableBuses());
+            return "buyTicket";
+        }
         return "redirect:/transport";
     }
 }
-

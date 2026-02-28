@@ -29,6 +29,7 @@ public class SecurityConfig {
                     "/transport/viewTickets",
                     "/transport/buses",
                     "/transport/passengers",
+                    "/transport-service",
                     "/auth/**",
                     "/css/**",
                     "/js/**",
@@ -38,7 +39,6 @@ public class SecurityConfig {
                     "/index.html",
                     "/index.jsp",
                     "/api/**",
-                    "/h2-console/**",
                     "/error"
                 ).permitAll()
                 .anyRequest().authenticated()

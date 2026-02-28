@@ -1,114 +1,147 @@
 package com.example.transportsystem.service;
 
-import com.example.transportsystem.Bus;
-import com.example.transportsystem.Passenger;
+import com.example.transportsystem.model.BusEntity;
+import com.example.transportsystem.model.PassengerEntity;
+import com.example.transportsystem.model.TicketEntity;
+import com.example.transportsystem.repository.BusRepository;
+import com.example.transportsystem.repository.PassengerRepository;
+import com.example.transportsystem.repository.TicketRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class TransportManagementService {
-    private final List<Bus> buses = new ArrayList<>();
-    private final List<Passenger> passengers = new ArrayList<>();
-    private int busIdCounter = 1;
-    private int passengerIdCounter = 1;
 
-    public TransportManagementService() {
+    @Autowired
+    private BusRepository busRepository;
 
-        buses.add(new Bus(busIdCounter++, "101", 40, "Ivan Petrov"));
-        buses.add(new Bus(busIdCounter++, "202", 50, "Maria Sidorova"));
-        buses.add(new Bus(busIdCounter++, "303", 30, "Sergey Ivanov"));
+    @Autowired
+    private PassengerRepository passengerRepository;
 
-        passengers.add(new Passenger(passengerIdCounter++, "Alex Smith", "+123456789", "Station A"));
-        passengers.add(new Passenger(passengerIdCounter++, "John Doe", "+987654321", "Station B"));
+    @Autowired
+    private TicketRepository ticketRepository;
+
+    // ==================== BUS METHODS ====================
+
+    public List<BusEntity> getAllBuses() {
+        return busRepository.findAll();
     }
 
-
-    public List<Bus> getAllBuses() {
-        return new ArrayList<>(buses);
+    public BusEntity getBusById(Long id) {
+        return busRepository.findById(id).orElse(null);
     }
 
-    public Bus getBusById(int id) {
-        return buses.stream()
-                .filter(b -> b.getId() == id)
-                .findFirst()
-                .orElse(null);
+    @Transactional
+    public BusEntity createBus(String routeNumber, int capacity, String driverName) {
+        BusEntity bus = new BusEntity(routeNumber, capacity, driverName);
+        return busRepository.save(bus);
     }
 
-    public Bus createBus(String routeNumber, int capacity, String driverName) {
-        Bus newBus = new Bus(busIdCounter++, routeNumber, capacity, driverName);
-        buses.add(newBus);
-        return newBus;
-    }
-
-    public boolean deleteBus(int id) {
-        return buses.removeIf(bus -> bus.getId() == id);
-    }
-
-    public List<Bus> getAvailableBuses() {
-        return buses.stream()
-                .filter(b -> !b.isFull())
-                .collect(Collectors.toList());
-    }
-
-    public List<Bus> getFullBuses() {
-        return buses.stream()
-                .filter(Bus::isFull)
-                .collect(Collectors.toList());
-    }
-
-    public List<Passenger> getAllPassengers() {
-        return new ArrayList<>(passengers);
-    }
-
-    public Passenger getPassengerById(int id) {
-        return passengers.stream()
-                .filter(p -> p.getId() == id)
-                .findFirst()
-                .orElse(null);
-    }
-
-    public Passenger createPassenger(String name, String phoneNumber, String destination) {
-        Passenger newPassenger = new Passenger(passengerIdCounter++, name, phoneNumber, destination);
-        passengers.add(newPassenger);
-        return newPassenger;
-    }
-
-    public boolean deletePassenger(int id) {
-        return passengers.removeIf(passenger -> passenger.getId() == id);
-    }
-
-    public List<Passenger> getPassengersWithTickets() {
-        return passengers.stream()
-                .filter(Passenger::isHasTicket)
-                .collect(Collectors.toList());
-    }
-
-    public boolean buyTicket(int passengerId, int busId) {
-        Bus bus = getBusById(busId);
-        Passenger passenger = getPassengerById(passengerId);
-
-        if (bus != null && passenger != null && !bus.isFull()) {
-            bus.addPassenger();
-            passenger.buyTicket();
+    @Transactional
+    public boolean deleteBus(Long id) {
+        if (busRepository.existsById(id)) {
+            busRepository.deleteById(id);
             return true;
         }
         return false;
     }
 
-    // Statistics
+    public List<BusEntity> getAvailableBuses() {
+        return busRepository.findAvailableBuses();
+    }
+
+    public List<BusEntity> getFullBuses() {
+        return busRepository.findFullBuses();
+    }
+
+    // ==================== PASSENGER METHODS ====================
+
+    public List<PassengerEntity> getAllPassengers() {
+        return passengerRepository.findAll();
+    }
+
+    public PassengerEntity getPassengerById(Long id) {
+        return passengerRepository.findById(id).orElse(null);
+    }
+
+    @Transactional
+    public PassengerEntity createPassenger(String name, String phoneNumber, String destination) {
+        PassengerEntity passenger = new PassengerEntity(name, phoneNumber, destination);
+        return passengerRepository.save(passenger);
+    }
+
+    @Transactional
+    public boolean deletePassenger(Long id) {
+        if (passengerRepository.existsById(id)) {
+            passengerRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    public List<PassengerEntity> getPassengersWithTickets() {
+        return passengerRepository.findByHasTicketTrue();
+    }
+
+    // ==================== TICKET METHODS ====================
+
+    @Transactional
+    public boolean buyTicket(Long passengerId, Long busId) {
+        BusEntity bus = getBusById(busId);
+        PassengerEntity passenger = getPassengerById(passengerId);
+
+        if (bus == null || passenger == null) {
+            return false;
+        }
+        if (bus.isFull()) {
+            return false;
+        }
+        if (ticketRepository.existsByPassengerAndBus(passenger, bus)) {
+            return false;
+        }
+
+        int seatNumber = bus.getCurrentPassengers() + 1;
+        bus.setCurrentPassengers(bus.getCurrentPassengers() + 1);
+        passenger.setHasTicket(true);
+
+        busRepository.save(bus);
+        passengerRepository.save(passenger);
+        ticketRepository.save(new TicketEntity(passenger, bus, seatNumber));
+
+        return true;
+    }
+
+    public List<TicketEntity> getAllTickets() {
+        return ticketRepository.findAll();
+    }
+
+    public List<TicketEntity> getTicketsByPassenger(Long passengerId) {
+        PassengerEntity passenger = getPassengerById(passengerId);
+        if (passenger == null) return List.of();
+        return ticketRepository.findByPassenger(passenger);
+    }
+
+    public List<TicketEntity> getTicketsByBus(Long busId) {
+        BusEntity bus = getBusById(busId);
+        if (bus == null) return List.of();
+        return ticketRepository.findByBus(bus);
+    }
+
+    // ==================== STATISTICS ====================
+
     public int getTotalCapacity() {
-        return buses.stream().mapToInt(Bus::getCapacity).sum();
+        return busRepository.findAll().stream().mapToInt(BusEntity::getCapacity).sum();
     }
 
     public int getTotalCurrentPassengers() {
-        return buses.stream().mapToInt(Bus::getCurrentPassengers).sum();
+        return busRepository.findAll().stream().mapToInt(BusEntity::getCurrentPassengers).sum();
     }
 
     public long getPassengersWithTicketsCount() {
-        return passengers.stream().filter(Passenger::isHasTicket).count();
+        return passengerRepository.findByHasTicketTrue().size();
     }
 }
 

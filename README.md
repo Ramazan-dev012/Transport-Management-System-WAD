@@ -1,193 +1,216 @@
 # Transport Management System
 
-Веб-приложение для управления транспортной системой с авторизацией пользователей.
+Web application for managing the transport system with user authorization.
 
-## Описание
+## Description
 
-Transport Management System - это современное веб-приложение на Spring Boot для управления автобусным парком, пассажирами и продажей билетов. Система включает авторизацию пользователей, защищённые страницы и REST API.
+Transport Management System is a modern Spring Boot web application for managing a bus fleet, passengers, and ticket sales. The system includes user authorization, protected pages, and REST API.
 
-## Функционал
+## Features
 
-### Публичный доступ (без авторизации):
-- Просмотр главной страницы со статистикой
-- Просмотр списка автобусов
-- Просмотр списка пассажиров
-- Просмотр билетов и свободных мест
+### Public access (no authorization required):
+- Main page with statistics
+- View bus list
+- View passenger list
+- View tickets and available seats
 
-### Требует авторизации:
-- Покупка билетов
-- Добавление автобусов
-- Добавление пассажиров
-- Управление данными
+### Requires authorization:
+- Purchase tickets
+- Add buses
+- Add passengers
+- Manage data
 
-### Авторизация:
-- Регистрация новых пользователей
-- Вход в систему
-- Защита паролей (BCrypt)
-- Роли пользователей
+### Authorization:
+- Register new users
+- User login
+- Password protection (BCrypt)
+- User roles
 
-## Технологии
+## Technologies
 
-- **Java 17**
+- **Java 21**
 - **Spring Boot 3.2.0**
-- **Spring Security** - авторизация и аутентификация
-- **Spring Data JPA** - работа с базой данных
-- **H2 Database** - встроенная база данных
-- **Thymeleaf** - шаблонизатор HTML
-- **Maven** - сборка проекта
-- **HTML/CSS** - современный UI
+- **Spring Security** - authorization and authentication
+- **Spring Data JPA** - database access
+- **PostgreSQL** - relational database
+- **Thymeleaf** - HTML template engine
+- **Maven** - build tool
+- **HTML/CSS** - modern UI
 
-## Быстрый старт
+## Quick Start
 
-### Требования:
-- Java JDK 17 или выше
-- Maven (или используйте встроенный Maven Wrapper)
+### Requirements:
+- Java JDK 21 or higher
+- PostgreSQL
+- Maven (or use built-in Maven Wrapper)
 
-### Запуск:
+### Database Setup:
 
-1. **Клонируйте репозиторий:**
+Create a PostgreSQL database and configure `application.properties`:
+
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
+spring.datasource.username=postgres
+spring.datasource.password=your_password
+spring.jpa.hibernate.ddl-auto=update
+```
+
+### Run:
+
+1. **Clone the repository:**
 ```bash
 git clone https://github.com/Ramazan-dev012/Transport-Management-System-WAD.git
 cd Transport-Management-System-WAD
 ```
 
-2. **Запустите приложение:**
+2. **Start the application:**
 ```bash
 mvnw spring-boot:run
 ```
 
-Или через IDE (IntelliJ IDEA):
-- Откройте проект
-- Запустите `TransportSystemApplication.java`
+Or via IDE (IntelliJ IDEA):
+- Open the project
+- Run `TransportSystemApplication.java`
 
-3. **Откройте в браузере:**
+3. **Open in browser:**
 ```
 http://localhost:8080/transport
 ```
 
-## Структура проекта
+## Project Structure
 
 ```
 src/main/java/com/example/transportsystem/
 ├── model/
-│   └── User.java                           # Модель пользователя (JPA Entity)
+│   ├── BusEntity.java          # Bus entity
+│   ├── PassengerEntity.java    # Passenger entity
+│   ├── TicketEntity.java       # Ticket entity
+│   └── User.java               # User entity
 ├── repository/
-│   └── UserRepository.java                 # JPA Repository для пользователей
+│   ├── BusRepository.java      # Bus queries (available/full buses)
+│   ├── PassengerRepository.java
+│   ├── TicketRepository.java
+│   └── UserRepository.java
 ├── service/
-│   ├── TransportManagementService.java     # Бизнес-логика транспорта
-│   ├── AuthService.java                    # Сервис регистрации
-│   └── CustomUserDetailsService.java       # Spring Security UserDetails
+│   ├── TransportManagementService.java  # Core business logic
+│   ├── AuthService.java                 # Registration service
+│   └── CustomUserDetailsService.java   # Spring Security integration
 ├── config/
-│   └── SecurityConfig.java                 # Конфигурация Spring Security
+│   └── SecurityConfig.java             # Spring Security configuration
 ├── controller/
-│   ├── HomeController.java                 # Главный контроллер
-│   ├── AuthController.java                 # Контроллер авторизации
-│   ├── TransportController.java            # MVC контроллер (Thymeleaf)
-│   └── TransportRestController.java        # REST API контроллер
-├── Bus.java                                # Модель автобуса
-├── Passenger.java                          # Модель пассажира
-└── TransportSystemApplication.java         # Main класс Spring Boot
+│   ├── HomeController.java             # Root redirect
+│   ├── AuthController.java             # Login / Register pages
+│   ├── TransportController.java        # MVC controller (Thymeleaf pages)
+│   └── TransportRestController.java    # REST API controller
+└── TransportSystemApplication.java     # Spring Boot entry point
 
 src/main/resources/
 ├── templates/
 │   ├── auth/
-│   │   ├── login.html                      # Страница входа
-│   │   └── register.html                   # Страница регистрации
-│   ├── main.html                           # Главная страница
-│   ├── buses.html                          # Список автобусов
-│   ├── passengers.html                     # Список пассажиров
-│   ├── viewTickets.html                    # Просмотр билетов
-│   ├── buyTicket.html                      # Покупка билета
-│   ├── addBus.html                         # Добавление автобуса
-│   └── addPassenger.html                   # Добавление пассажира
+│   │   ├── login.html          # Login page
+│   │   └── register.html       # Registration page
+│   ├── main.html               # Dashboard with statistics
+│   ├── buses.html              # Bus list
+│   ├── passengers.html         # Passenger list
+│   ├── viewTickets.html        # View tickets and available buses
+│   ├── buyTicket.html          # Buy ticket
+│   ├── addBus.html             # Add bus form
+│   └── addPassenger.html       # Add passenger form
 ├── static/
-│   ├── css/style.css                       # Стили
-│   └── api-tester.html                     # Тестер REST API
-└── application.properties                  # Конфигурация приложения
+│   ├── css/style.css           # Styles
+│   └── api-tester.html         # REST API tester
+└── application.properties      # Application configuration
 ```
 
-## Авторизация
+## Data Models
 
-### Регистрация:
-1. Перейдите на `/auth/register`
-2. Заполните форму (логин, email, пароль)
-3. Нажмите "Создать аккаунт"
+### BusEntity (buses table)
+| Field | Type | Description |
+|-------|------|-------------|
+| id | Long | Primary key |
+| routeNumber | String | Route number |
+| capacity | int | Total seat capacity |
+| driverName | String | Driver name |
+| currentPassengers | int | Current passenger count |
 
-### Вход:
-1. Перейдите на `/auth/login`
-2. Введите логин и пароль
-3. Нажмите "Войти"
+### PassengerEntity (passengers table)
+| Field | Type | Description |
+|-------|------|-------------|
+| id | Long | Primary key |
+| name | String | Full name |
+| phoneNumber | String | Phone number |
+| destination | String | Destination |
+| hasTicket | boolean | Ticket status |
 
-### Тестовые данные:
-При первом запуске в базе данных автоматически создаются:
-- 3 тестовых автобуса
-- 2 тестовых пассажира
+### TicketEntity (tickets table)
+| Field | Type | Description |
+|-------|------|-------------|
+| id | Long | Primary key |
+| passenger | PassengerEntity | Passenger (FK) |
+| bus | BusEntity | Bus (FK) |
+| seatNumber | int | Seat number |
+| purchasedAt | LocalDateTime | Purchase time |
 
-## Доступные URL
+## Available Pages
 
-| URL | Описание |
-|-----|----------|
-| `/` | Редирект на главную страницу |
-| `/transport` | Главная страница со статистикой |
-| `/auth/login` | Вход в систему |
-| `/auth/register` | Регистрация |
-| `/transport/buses` | Список автобусов |
-| `/transport/buses/add` | Добавить автобус (требует авторизации) |
-| `/transport/passengers` | Список пассажиров |
-| `/transport/passengers/add` | Добавить пассажира (требует авторизации) |
-| `/transport/viewTickets` | Просмотр билетов |
-| `/transport/buyTicket` | Купить билет (требует авторизации) |
-| `/h2-console` | H2 Console (БД) |
-| `/api/transport/**` | REST API endpoints |
+| URL | Description | Auth required |
+|-----|-------------|---------------|
+| `/transport` | Dashboard with statistics | No |
+| `/transport/buses` | Bus list | No |
+| `/transport/passengers` | Passenger list | No |
+| `/transport/viewTickets` | View tickets and available buses | No |
+| `/transport/buses/add` | Add bus form | Yes |
+| `/transport/passengers/add` | Add passenger form | Yes |
+| `/transport/buyTicket` | Buy ticket | Yes |
+| `/auth/login` | Login page | No |
+| `/auth/register` | Registration page | No |
 
-## Конфигурация
+## REST API
 
-### База данных (H2):
-```properties
-spring.datasource.url=jdbc:h2:mem:transportdb
-spring.datasource.username=sa
-spring.datasource.password=
-```
+Base URL: `/api/transport`
 
-### Порт сервера:
+### Buses
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/buses` | Get all buses |
+| GET | `/buses/{id}` | Get bus by ID |
+| GET | `/buses/available` | Get available buses (free seats) |
+| GET | `/buses/full` | Get full buses |
+| POST | `/buses` | Add bus |
+| DELETE | `/buses/{id}` | Delete bus |
+
+### Passengers
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/passengers` | Get all passengers |
+| GET | `/passengers/{id}` | Get passenger by ID |
+| GET | `/passengers/withTickets` | Get passengers with tickets |
+| POST | `/passengers` | Add passenger |
+| DELETE | `/passengers/{id}` | Delete passenger |
+
+### Tickets
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/tickets` | Get all tickets |
+| POST | `/tickets` | Buy ticket |
+
+### Statistics
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/statistics` | Get system statistics |
+
+## Configuration
+
+### Server port:
 ```properties
 server.port=8080
 ```
 
-Для изменения порта отредактируйте `application.properties`.
+## License
 
-## REST API
+This project was created for educational purposes.
 
-### Автобусы:
-- `GET /api/transport/buses` - список всех автобусов
-- `POST /api/transport/buses` - добавить автобус
-- `DELETE /api/transport/buses/{id}` - удалить автобус
-
-### Пассажиры:
-- `GET /api/transport/passengers` - список всех пассажиров
-- `POST /api/transport/passengers` - добавить пассажира
-- `DELETE /api/transport/passengers/{id}` - удалить пассажира
-
-### Билеты:
-- `POST /api/transport/tickets/buy` - купить билет
-
-## Скриншоты
-
-### Главная страница
-Отображает статистику системы: количество автобусов, пассажиров, общую вместимость.
-
-### Страница авторизации
-Современный дизайн с градиентным фоном и стеклянным эффектом.
-
-### Управление автобусами
-Просмотр, добавление и удаление автобусов с отображением загруженности.
-
-## Лицензия
-
-Этот проект создан в образовательных целях.
-
-## Автор
+## Author
 
 **Ramazan**
 - GitHub: [@Ramazan-dev012](https://github.com/Ramazan-dev012)
-

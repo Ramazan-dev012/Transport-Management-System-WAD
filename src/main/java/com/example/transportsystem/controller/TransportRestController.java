@@ -1,7 +1,8 @@
 package com.example.transportsystem.controller;
 
-import com.example.transportsystem.Bus;
-import com.example.transportsystem.Passenger;
+import com.example.transportsystem.model.BusEntity;
+import com.example.transportsystem.model.PassengerEntity;
+import com.example.transportsystem.model.TicketEntity;
 import com.example.transportsystem.service.TransportManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,20 +21,16 @@ public class TransportRestController {
     @Autowired
     private TransportManagementService service;
 
+    // ==================== BUS ENDPOINTS ====================
 
     @GetMapping("/buses")
-    public ResponseEntity<List<Bus>> getAllBuses() {
+    public ResponseEntity<List<BusEntity>> getAllBuses() {
         return ResponseEntity.ok(service.getAllBuses());
     }
 
-
     @GetMapping("/buses/{id}")
-    public ResponseEntity<?> getBusById(@PathVariable int id) {
-        Bus bus = service.getAllBuses().stream()
-                .filter(b -> b.getId() == id)
-                .findFirst()
-                .orElse(null);
-
+    public ResponseEntity<?> getBusById(@PathVariable Long id) {
+        BusEntity bus = service.getBusById(id);
         if (bus == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Автобус с ID " + id + " не найден"));
@@ -42,48 +39,41 @@ public class TransportRestController {
     }
 
     @PostMapping("/buses")
-    public ResponseEntity<Bus> createBus(@RequestBody BusRequest request) {
-        Bus bus = service.createBus(request.getRouteNumber(), request.getCapacity(), request.getDriverName());
+    public ResponseEntity<BusEntity> createBus(@RequestBody BusRequest request) {
+        BusEntity bus = service.createBus(request.getRouteNumber(), request.getCapacity(), request.getDriverName());
         return ResponseEntity.status(HttpStatus.CREATED).body(bus);
     }
 
     @DeleteMapping("/buses/{id}")
-    public ResponseEntity<?> deleteBus(@PathVariable int id) {
-        try {
-            service.deleteBus(id);
+    public ResponseEntity<?> deleteBus(@PathVariable Long id) {
+        boolean deleted = service.deleteBus(id);
+        if (deleted) {
             return ResponseEntity.ok(Map.of("message", "Автобус успешно удален", "id", id));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Не удалось удалить автобус: " + e.getMessage()));
         }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "Автобус с ID " + id + " не найден"));
     }
 
-
     @GetMapping("/buses/available")
-    public ResponseEntity<List<Bus>> getAvailableBuses() {
+    public ResponseEntity<List<BusEntity>> getAvailableBuses() {
         return ResponseEntity.ok(service.getAvailableBuses());
     }
 
-
     @GetMapping("/buses/full")
-    public ResponseEntity<List<Bus>> getFullBuses() {
+    public ResponseEntity<List<BusEntity>> getFullBuses() {
         return ResponseEntity.ok(service.getFullBuses());
     }
 
+    // ==================== PASSENGER ENDPOINTS ====================
 
     @GetMapping("/passengers")
-    public ResponseEntity<List<Passenger>> getAllPassengers() {
+    public ResponseEntity<List<PassengerEntity>> getAllPassengers() {
         return ResponseEntity.ok(service.getAllPassengers());
     }
 
-
     @GetMapping("/passengers/{id}")
-    public ResponseEntity<?> getPassengerById(@PathVariable int id) {
-        Passenger passenger = service.getAllPassengers().stream()
-                .filter(p -> p.getId() == id)
-                .findFirst()
-                .orElse(null);
-
+    public ResponseEntity<?> getPassengerById(@PathVariable Long id) {
+        PassengerEntity passenger = service.getPassengerById(id);
         if (passenger == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", "Пассажир с ID " + id + " не найден"));
@@ -91,10 +81,9 @@ public class TransportRestController {
         return ResponseEntity.ok(passenger);
     }
 
-
     @PostMapping("/passengers")
-    public ResponseEntity<Passenger> createPassenger(@RequestBody PassengerRequest request) {
-        Passenger passenger = service.createPassenger(
+    public ResponseEntity<PassengerEntity> createPassenger(@RequestBody PassengerRequest request) {
+        PassengerEntity passenger = service.createPassenger(
                 request.getName(),
                 request.getPhoneNumber(),
                 request.getDestination()
@@ -102,24 +91,27 @@ public class TransportRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(passenger);
     }
 
-
     @DeleteMapping("/passengers/{id}")
-    public ResponseEntity<?> deletePassenger(@PathVariable int id) {
-        try {
-            service.deletePassenger(id);
+    public ResponseEntity<?> deletePassenger(@PathVariable Long id) {
+        boolean deleted = service.deletePassenger(id);
+        if (deleted) {
             return ResponseEntity.ok(Map.of("message", "Пассажир успешно удален", "id", id));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Не удалось удалить пассажира: " + e.getMessage()));
         }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "Пассажир с ID " + id + " не найден"));
     }
 
-
     @GetMapping("/passengers/withTickets")
-    public ResponseEntity<List<Passenger>> getPassengersWithTickets() {
+    public ResponseEntity<List<PassengerEntity>> getPassengersWithTickets() {
         return ResponseEntity.ok(service.getPassengersWithTickets());
     }
 
+    // ==================== TICKET ENDPOINTS ====================
+
+    @GetMapping("/tickets")
+    public ResponseEntity<List<TicketEntity>> getAllTickets() {
+        return ResponseEntity.ok(service.getAllTickets());
+    }
 
     @PostMapping("/tickets")
     public ResponseEntity<?> buyTicket(@RequestBody TicketRequest request) {
@@ -133,7 +125,7 @@ public class TransportRestController {
                 ));
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(Map.of("error", "Не удалось купить билет. Проверьте данные."));
+                        .body(Map.of("error", "Не удалось купить билет. Проверьте данные или автобус заполнен."));
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -141,6 +133,7 @@ public class TransportRestController {
         }
     }
 
+    // ==================== STATISTICS ====================
 
     @GetMapping("/statistics")
     public ResponseEntity<Map<String, Object>> getStatistics() {
@@ -156,6 +149,7 @@ public class TransportRestController {
         return ResponseEntity.ok(stats);
     }
 
+    // ==================== REQUEST CLASSES ====================
 
     public static class BusRequest {
         private String routeNumber;
@@ -164,10 +158,8 @@ public class TransportRestController {
 
         public String getRouteNumber() { return routeNumber; }
         public void setRouteNumber(String routeNumber) { this.routeNumber = routeNumber; }
-
         public int getCapacity() { return capacity; }
         public void setCapacity(int capacity) { this.capacity = capacity; }
-
         public String getDriverName() { return driverName; }
         public void setDriverName(String driverName) { this.driverName = driverName; }
     }
@@ -179,23 +171,19 @@ public class TransportRestController {
 
         public String getName() { return name; }
         public void setName(String name) { this.name = name; }
-
         public String getPhoneNumber() { return phoneNumber; }
         public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-
         public String getDestination() { return destination; }
         public void setDestination(String destination) { this.destination = destination; }
     }
 
     public static class TicketRequest {
-        private int passengerId;
-        private int busId;
+        private Long passengerId;
+        private Long busId;
 
-        public int getPassengerId() { return passengerId; }
-        public void setPassengerId(int passengerId) { this.passengerId = passengerId; }
-
-        public int getBusId() { return busId; }
-        public void setBusId(int busId) { this.busId = busId; }
+        public Long getPassengerId() { return passengerId; }
+        public void setPassengerId(Long passengerId) { this.passengerId = passengerId; }
+        public Long getBusId() { return busId; }
+        public void setBusId(Long busId) { this.busId = busId; }
     }
 }
-
