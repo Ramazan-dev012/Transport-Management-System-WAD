@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html th:lang="${#locale.language}" lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль — Transport Management System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --blue: #0057b8; --blue-dark: #003f8a; --blue-light: #e8f0fb;
+            --accent: #f5a623; --text: #1a2744; --muted: #6b7a99;
+            --white: #ffffff; --bg: #f4f7fc; --border: #dde4f0;
+            --green: #27ae60; --red: #e74c3c;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        .navbar { background: var(--white); border-bottom: 2px solid var(--blue); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,87,184,0.10); }
+        .navbar-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 64px; }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo-icon { width: 40px; height: 40px; background: var(--blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+        .logo-text { font-size: 17px; font-weight: 800; color: var(--blue); }
+        .logo-text span { color: var(--accent); }
+
+        .nav-links { display: flex; align-items: center; gap: 4px; }
+        .nav-links a { text-decoration: none; color: var(--text); font-size: 14px; font-weight: 600; padding: 8px 14px; border-radius: 8px; transition: background 0.2s, color 0.2s; }
+        .nav-links a:hover { background: var(--blue-light); color: var(--blue); }
+
+        .nav-auth { display: flex; align-items: center; gap: 10px; }
+        .nav-user { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text); font-size: 14px; font-weight: 700; padding: 7px 14px; border-radius: 8px; border: 1.5px solid var(--border); }
+        .nav-user:hover { border-color: var(--blue); color: var(--blue); }
+        .nav-user-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 6px var(--green); }
+
+        .btn-logout-nav { padding: 8px 16px; border-radius: 8px; background: transparent; border: 1.5px solid #e0e7f0; color: var(--red); font-size: 13px; font-weight: 800; cursor: pointer; }
+        .btn-logout-nav:hover { background: #fff0f0; }
+
+        .page-header { background: linear-gradient(120deg, #0057b8 0%, #003f8a 60%, #002966 100%); color: var(--white); padding: 32px 24px; }
+        .page-header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 16px; }
+        .avatar { width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+        .page-header h1 { font-size: 24px; font-weight: 800; }
+        .page-header p { color: rgba(255,255,255,0.75); font-size: 14px; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+        .status-dot { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 6px #4ade80; display: inline-block; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+        .main-content { max-width: 720px; margin: 28px auto; padding: 0 24px 60px; }
+
+        .info-card { background: var(--white); border-radius: 16px; border: 1.5px solid var(--border); overflow: hidden; margin-bottom: 16px; }
+        .info-card-header { padding: 14px 20px; background: var(--blue-light); border-bottom: 1px solid var(--border); font-size: 12px; font-weight: 800; color: var(--blue); text-transform: uppercase; letter-spacing: 0.8px; }
+        .info-row { display: flex; align-items: center; padding: 12px 20px; border-bottom: 1px solid var(--border); }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { width: 180px; flex-shrink: 0; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-value { font-size: 14px; color: var(--text); word-break: break-word; }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; background: var(--blue-light); color: var(--blue); margin-right: 6px; }
+        .session-id { font-family: 'Courier New', monospace; font-size: 12px; color: var(--blue-dark); background: var(--blue-light); padding: 5px 10px; border-radius: 6px; word-break: break-all; }
+
+        .btn-logout { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; background: var(--red); color: var(--white); font-size: 14px; font-weight: 800; border-radius: 10px; border: none; cursor: pointer; transition: background 0.2s, transform 0.2s; }
+        .btn-logout:hover { background: #c0392b; transform: translateY(-1px); }
+
+        .footer { background: var(--text); color: rgba(255,255,255,0.6); padding: 30px 24px; text-align: center; font-size: 13px; }
+        .footer-logo { color: var(--white); font-weight: 800; font-size: 16px; margin-bottom: 8px; }
+        .footer-logo span { color: var(--accent); }
+
+        .passenger-list { list-style: none; padding: 0; margin: 0; }
+        .passenger-list li { padding: 10px 20px; border-bottom: 1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:12px; }
+        .passenger-list li:last-child { border-bottom: none; }
+        .passenger-name { font-weight: 800; color: var(--text); }
+        .passenger-meta { font-size: 12px; color: var(--muted); }
+        .pill { padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; background: #eafaf1; color: var(--green); white-space: nowrap; }
+        .pill.gray { background: #f1f5f9; color: #475569; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-inner">
+        <a href="/transport" class="logo">
+            <div class="logo-icon">🚌</div>
+            <span class="logo-text">Transport <span>Management System</span></span>
+        </a>
+        <div class="nav-links">
+            <a th:href="@{/transport}">Главная</a>
+            <a th:href="@{/transport/buses}">Автобусы</a>
+            <a th:href="@{/transport/passengers}" sec:authorize="hasRole('ADMIN')">Пассажиры</a>
+
+            <a th:href="@{/transport/buyTicket}" sec:authorize="!hasRole('ADMIN')">Билеты</a>
+            <a th:href="@{/admin/tickets}" sec:authorize="hasRole('ADMIN')">Билеты</a>
+        </div>
+        <div class="nav-auth" sec:authorize="isAuthenticated()">
+            <a th:href="@{/auth/profile}" class="nav-user">
+                <span class="nav-user-dot"></span>
+                <span sec:authentication="name"></span>
+            </a>
+            <form th:action="@{/auth/logout}" method="post" style="margin:0;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn-logout-nav">Выйти</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header">
+    <div class="page-header-inner">
+        <div class="avatar">👤</div>
+        <div>
+            <h1 th:text="${username}">Пользователь</h1>
+            <p><span class="status-dot"></span> Сессия активна</p>
+        </div>
+    </div>
+</div>
+
+<div class="main-content">
+
+    <div class="info-card">
+        <div class="info-card-header">👤 Информация о пользователе</div>
+        <div class="info-row">
+            <span class="info-label">Имя пользователя</span>
+            <span class="info-value" th:text="${username}">—</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Email</span>
+            <span class="info-value" th:text="${email != null ? email : '—'}">—</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Роли</span>
+            <span class="info-value">
+                <span th:each="role : ${roles}" class="badge" th:text="${role}">ROLE_USER</span>
+            </span>
+        </div>
+    </div>
+
+    <div class="info-card">
+        <div class="info-card-header">🔐 Информация о сессии</div>
+        <div class="info-row">
+            <span class="info-label">Session ID</span>
+            <span class="info-value"><span class="session-id" th:text="${sessionId}">—</span></span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Время входа</span>
+            <span class="info-value" th:text="${sessionCreated}">—</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Права доступа</span>
+            <span class="info-value">
+                <span th:each="auth : ${authorities}" class="badge" th:text="${auth.authority}">—</span>
+            </span>
+        </div>
+    </div>
+
+    <div class="info-card">
+        <div class="info-card-header">👥 Мои пассажиры</div>
+        <div th:if="${myPassengers == null || #lists.isEmpty(myPassengers)}" class="info-row">
+            <span class="info-value">Пока нет пассажиров. Добавьте пассажира через администратора или обратитесь в поддержку.</span>
+        </div>
+        <ul class="passenger-list" th:unless="${myPassengers == null || #lists.isEmpty(myPassengers)}">
+            <li th:each="p : ${myPassengers}">
+                <div>
+                    <div class="passenger-name" th:text="${p.name}">Имя</div>
+                    <div class="passenger-meta" th:text="(${p.destination} != null ? ${p.destination} : '—') + ' • ' + (${p.phoneNumber} != null ? ${p.phoneNumber} : '—')">—</div>
+                </div>
+                <span class="pill" th:if="${p.hasTicket}">Билет</span>
+                <span class="pill gray" th:unless="${p.hasTicket}">Без билета</span>
+            </li>
+        </ul>
+    </div>
+
+    <form th:action="@{/auth/logout}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <button type="submit" class="btn-logout">🚪 Выйти из системы</button>
+    </form>
+
+</div>
+
+<footer class="footer">
+    <div class="footer-logo">Transport <span>Management System</span></div>
+    <div style="margin-top:14px; color:rgba(255,255,255,0.35); font-size:12px;">© 2026 Transport Management System.</div>
+</footer>
+</body>
+</html>

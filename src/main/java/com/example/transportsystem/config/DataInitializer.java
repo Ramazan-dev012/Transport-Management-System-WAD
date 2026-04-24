@@ -19,7 +19,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Загружаем начальные данные только если БД пуста
+
         if (busRepository.count() == 0) {
             busRepository.save(new BusEntity("101", 40, "Иван Петров"));
             busRepository.save(new BusEntity("202", 50, "Мария Сидорова"));

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Управление пользователями</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            margin-right: 5px;
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .role-badge.admin {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .role-badge.user {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9em;
+            margin-right: 5px;
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .role-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 10px 0 18px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(0.95);
+        }
+
+        .admin-actions .action-btn {
+            padding: 10px 16px;
+            font-size: 1em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="admin-container">
+    <a href="/transport" class="back-link"><i class="fas fa-arrow-left"></i> На главную</a>
+
+    <h2><i class="fas fa-users-cog"></i> Управление пользователями</h2>
+
+    <div class="admin-actions">
+        <a href="/admin/tickets" th:href="@{/admin/tickets}" class="action-btn btn-primary" style="text-decoration:none;">
+            <i class="fas fa-ticket"></i> Просмотр билетов
+        </a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Имя пользователя</th>
+                <th>Email</th>
+                <th>Роли</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}">1</td>
+                <td th:text="${user.username}">user1</td>
+                <td th:text="${user.email}">user1@example.com</td>
+                <td>
+                    <span th:each="role : ${user.roles}"
+                          th:text="${role.replace('ROLE_', '')}"
+                          th:class="${'role-badge ' + (role == 'ROLE_ADMIN' ? 'admin' : 'user')}">
+                        USER
+                    </span>
+                </td>
+                <td>
+                    <div class="role-form">
+                        <form th:action="@{/admin/users/{id}/roles(id=${user.id})}" method="post" style="display: inline;">
+                            <select name="roles" onchange="this.form.submit()">
+                                <option value="" disabled selected>Изменить роль</option>
+                                <option value="ROLE_USER">USER</option>
+                                <option value="ROLE_ADMIN">ADMIN</option>
+                                <option value="ROLE_USER,ROLE_ADMIN">BOTH</option>
+                            </select>
+                        </form>
+
+                        <form th:action="@{/admin/users/{id}/delete(id=${user.id})}" method="post"
+                              style="display: inline;"
+                              onsubmit="return confirm('Вы уверены, что хотите удалить этого пользователя?');">
+                            <button type="submit" class="action-btn btn-delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

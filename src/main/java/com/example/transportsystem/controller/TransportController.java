@@ -6,6 +6,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.security.core.Authentication;
+
 
 @Controller
 @RequestMapping("/transport")
@@ -16,9 +18,14 @@ public class TransportController {
 
 
     @GetMapping
-    public String mainPage(Model model) {
+    public String mainPage(Model model, Authentication auth) {
+        boolean isAdmin = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+
         model.addAttribute("buses", service.getAllBuses());
-        model.addAttribute("passengers", service.getAllPassengers());
+        if (isAdmin) {
+            model.addAttribute("passengers", service.getAllPassengers());
+        }
         model.addAttribute("totalCapacity", service.getTotalCapacity());
         model.addAttribute("totalCurrentPassengers", service.getTotalCurrentPassengers());
         model.addAttribute("passengersWithTickets", service.getPassengersWithTicketsCount());
@@ -84,8 +91,16 @@ public class TransportController {
     @PostMapping("/passengers/create")
     public String createPassenger(@RequestParam String name,
                                  @RequestParam String phoneNumber,
-                                 @RequestParam String destination) {
-        service.createPassenger(name, phoneNumber, destination);
+                                 @RequestParam String destination,
+                                 Authentication auth) {
+        String username = (auth != null ? auth.getName() : null);
+
+        // Если по какой-то причине auth отсутствует, создаём как раньше.
+        if (username == null) {
+            service.createPassenger(name, phoneNumber, destination);
+        } else {
+            service.createPassenger(name, phoneNumber, destination, username);
+        }
         return "redirect:/transport/passengers";
     }
 
@@ -98,24 +113,38 @@ public class TransportController {
 
 
     @GetMapping("/buyTicket")
-    public String buyTicketForm(Model model) {
-        model.addAttribute("passengers", service.getAllPassengers());
+    public String buyTicketForm(Model model, Authentication auth) {
+        boolean isAdmin = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+
+        model.addAttribute("passengers", isAdmin
+                ? service.getAllPassengers()
+                : service.getPassengersEligibleForPurchase(auth.getName()));
         model.addAttribute("buses", service.getAvailableBuses());
         return "buyTicket";
     }
 
-
     @PostMapping("/buyTicket")
     public String buyTicket(@RequestParam Long passengerId,
                            @RequestParam Long busId,
-                           Model model) {
-        boolean success = service.buyTicket(passengerId, busId);
-        if (!success) {
-            model.addAttribute("error", "Не удалось купить билет. Автобус заполнен или данные неверны.");
-            model.addAttribute("passengers", service.getAllPassengers());
+                           Model model,
+                           Authentication auth) {
+        try {
+            var result = service.buyTicketAndGetDetails(passengerId, busId);
+            model.addAttribute("passengerName", result.get("passengerName"));
+            model.addAttribute("busRoute", result.get("busRoute"));
+            model.addAttribute("copassengers", result.get("copassengers"));
+            return "ticketSuccess";
+        } catch (IllegalStateException e) {
+            boolean isAdmin = auth != null && auth.getAuthorities().stream()
+                    .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("passengers", isAdmin
+                    ? service.getAllPassengers()
+                    : service.getPassengersEligibleForPurchase(auth.getName()));
             model.addAttribute("buses", service.getAvailableBuses());
             return "buyTicket";
         }
-        return "redirect:/transport";
     }
 }

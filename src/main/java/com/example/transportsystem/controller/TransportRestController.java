@@ -83,11 +83,21 @@ public class TransportRestController {
 
     @PostMapping("/passengers")
     public ResponseEntity<PassengerEntity> createPassenger(@RequestBody PassengerRequest request) {
-        PassengerEntity passenger = service.createPassenger(
-                request.getName(),
-                request.getPhoneNumber(),
-                request.getDestination()
-        );
+        PassengerEntity passenger;
+        if (request.getOwnerUsername() != null && !request.getOwnerUsername().isBlank()) {
+            passenger = service.createPassenger(
+                    request.getName(),
+                    request.getPhoneNumber(),
+                    request.getDestination(),
+                    request.getOwnerUsername()
+            );
+        } else {
+            passenger = service.createPassenger(
+                    request.getName(),
+                    request.getPhoneNumber(),
+                    request.getDestination()
+            );
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(passenger);
     }
 
@@ -168,6 +178,7 @@ public class TransportRestController {
         private String name;
         private String phoneNumber;
         private String destination;
+        private String ownerUsername;
 
         public String getName() { return name; }
         public void setName(String name) { this.name = name; }
@@ -175,6 +186,9 @@ public class TransportRestController {
         public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
         public String getDestination() { return destination; }
         public void setDestination(String destination) { this.destination = destination; }
+
+        public String getOwnerUsername() { return ownerUsername; }
+        public void setOwnerUsername(String ownerUsername) { this.ownerUsername = ownerUsername; }
     }
 
     public static class TicketRequest {

@@ -1,5 +1,6 @@
 package com.example.transportsystem.service;
 
+import com.example.transportsystem.factory.TransportEntityFactory;
 import com.example.transportsystem.model.BusEntity;
 import com.example.transportsystem.model.PassengerEntity;
 import com.example.transportsystem.model.TicketEntity;
@@ -11,9 +12,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class TransportManagementService {
+
+    private final TransportEntityFactory entityFactory;
+
+    public TransportManagementService(TransportEntityFactory entityFactory) {
+        this.entityFactory = entityFactory;
+    }
 
     @Autowired
     private BusRepository busRepository;
@@ -36,7 +45,7 @@ public class TransportManagementService {
 
     @Transactional
     public BusEntity createBus(String routeNumber, int capacity, String driverName) {
-        BusEntity bus = new BusEntity(routeNumber, capacity, driverName);
+        BusEntity bus = entityFactory.newBus(routeNumber, capacity, driverName);
         return busRepository.save(bus);
     }
 
@@ -69,7 +78,14 @@ public class TransportManagementService {
 
     @Transactional
     public PassengerEntity createPassenger(String name, String phoneNumber, String destination) {
-        PassengerEntity passenger = new PassengerEntity(name, phoneNumber, destination);
+        PassengerEntity passenger = entityFactory.newPassenger(name, phoneNumber, destination);
+        return passengerRepository.save(passenger);
+    }
+
+    @Transactional
+    public PassengerEntity createPassenger(String name, String phoneNumber, String destination, String createdByUsername) {
+        PassengerEntity passenger = entityFactory.newPassenger(name, phoneNumber, destination);
+        passenger.setCreatedByUsername(createdByUsername);
         return passengerRepository.save(passenger);
     }
 
@@ -84,6 +100,22 @@ public class TransportManagementService {
 
     public List<PassengerEntity> getPassengersWithTickets() {
         return passengerRepository.findByHasTicketTrue();
+    }
+
+    /**
+     * Для обычного пользователя: показываем только пассажиров, у которых ещё нет билета.
+     * (Админ, при необходимости, продолжает видеть всех.)
+     */
+    public List<PassengerEntity> getPassengersEligibleForPurchase() {
+        return passengerRepository.findByHasTicketFalse();
+    }
+
+    public List<PassengerEntity> getPassengersByOwner(String username) {
+        return passengerRepository.findByCreatedByUsernameOrderByIdDesc(username);
+    }
+
+    public List<PassengerEntity> getPassengersEligibleForPurchase(String username) {
+        return passengerRepository.findByCreatedByUsernameAndHasTicketFalseOrderByIdDesc(username);
     }
 
     // ==================== TICKET METHODS ====================
@@ -109,9 +141,46 @@ public class TransportManagementService {
 
         busRepository.save(bus);
         passengerRepository.save(passenger);
-        ticketRepository.save(new TicketEntity(passenger, bus, seatNumber));
+        ticketRepository.save(entityFactory.newTicket(passenger, bus, seatNumber));
 
         return true;
+    }
+
+    @Transactional
+    public Map<String, Object> buyTicketAndGetDetails(Long passengerId, Long busId) {
+        BusEntity bus = busRepository.findById(busId)
+                .orElseThrow(() -> new IllegalStateException("Автобус не найден."));
+        PassengerEntity passenger = passengerRepository.findById(passengerId)
+                .orElseThrow(() -> new IllegalStateException("Пассажир не найден."));
+
+        if (bus.isFull()) {
+            throw new IllegalStateException("В автобусе нет свободных мест.");
+        }
+        if (passenger.isHasTicket()) {
+            throw new IllegalStateException("У этого пассажира уже есть билет.");
+        }
+
+        int seatNumber = bus.getCurrentPassengers() + 1;
+        bus.setCurrentPassengers(bus.getCurrentPassengers() + 1);
+        passenger.setHasTicket(true);
+
+        busRepository.save(bus);
+        passengerRepository.save(passenger);
+        ticketRepository.save(entityFactory.newTicket(passenger, bus, seatNumber));
+
+        // Список сопассажиров: все пассажиры, у которых есть билет на этот автобус.
+        List<String> copassengers = ticketRepository.findByBus(bus).stream()
+                .map(TicketEntity::getPassenger)
+                .map(PassengerEntity::getName)
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+
+        return Map.of(
+                "passengerName", passenger.getName(),
+                "busRoute", bus.getRouteNumber(),
+                "copassengers", copassengers
+        );
     }
 
     public List<TicketEntity> getAllTickets() {
@@ -144,4 +213,3 @@ public class TransportManagementService {
         return passengerRepository.findByHasTicketTrue().size();
     }
 }
-

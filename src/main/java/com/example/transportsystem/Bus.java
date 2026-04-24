@@ -1,7 +1,12 @@
 package com.example.transportsystem;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @SuppressWarnings("unused")
-public class Bus {
+public class Bus implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private int id;
     private String routeNumber;
     private int capacity;

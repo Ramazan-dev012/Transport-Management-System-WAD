@@ -25,12 +25,13 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/",
+                    "/lang",
                     "/transport",
-                    "/transport/viewTickets",
                     "/transport/buses",
-                    "/transport/passengers",
+                    // "/transport/passengers",  // список пассажиров — только админ
                     "/transport-service",
                     "/auth/**",
+                    "/debug/**",
                     "/css/**",
                     "/js/**",
                     "/images/**",
@@ -39,8 +40,17 @@ public class SecurityConfig {
                     "/index.html",
                     "/index.jsp",
                     "/api/**",
+                    "/email/**",
                     "/error"
                 ).permitAll()
+
+                // PASSENGERS: admin-only everywhere
+                .requestMatchers("/transport/passengers/**").hasRole("ADMIN")
+                .requestMatchers("/api/transport/passengers/**").hasRole("ADMIN")
+
+                // Tickets overview page should be ADMIN-only
+                .requestMatchers("/transport/viewTickets").hasRole("ADMIN")
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -55,10 +65,16 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/transport")
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
+                .deleteCookies("JSESSIONID")
                 .permitAll()
             )
+            .sessionManagement(session -> session
+                .invalidSessionUrl("/auth/login?expired=true")
+                .maximumSessions(1)
+                .expiredUrl("/auth/login?expired=true")
+            )
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/h2-console/**", "/api/**")
+                .ignoringRequestMatchers("/h2-console/**", "/api/**", "/email/**")
             )
             .headers(headers -> headers
                 .frameOptions(frame -> frame.sameOrigin())
@@ -79,4 +95,3 @@ public class SecurityConfig {
         return builder.build();
     }
 }
-

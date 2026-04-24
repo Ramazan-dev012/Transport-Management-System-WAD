@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport"  content="width=device-width, initial-scale=1.0" />
+    <title>Ошибка</title>
+    <style>
+        body { font-family: Segoe UI, Tahoma, Arial, sans-serif; background:#0f172a; color:#e2e8f0; margin:0; padding:40px; }
+        .card { max-width: 880px; margin: 0 auto; background: rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px; }
+        h1 { margin:0 0 10px; font-size: 24px; }
+        .meta { color: rgba(226,232,240,0.75); font-size: 13px; margin-bottom: 16px; }
+        pre { background: rgba(0,0,0,0.35); padding: 14px; border-radius: 12px; overflow:auto; }
+        a { color: #93c5fd; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Произошла ошибка</h1>
+    <div class="meta">
+        <div><strong>Status:</strong> <span th:text="${status}">500</span></div>
+        <div><strong>Error:</strong> <span th:text="${error}">Internal Server Error</span></div>
+        <div><strong>Path:</strong> <span th:text="${path}">/</span></div>
+        <div><strong>Time:</strong> <span th:text="${timestamp}"></span></div>
+    </div>
+
+    <div th:if="${message}">
+        <div class="meta"><strong>Message:</strong></div>
+        <pre th:text="${message}"></pre>
+    </div>
+
+    <div th:if="${trace}">
+        <div class="meta"><strong>Trace:</strong></div>
+        <pre th:text="${trace}"></pre>
+    </div>
+
+    <div class="meta">
+        Подсказка: если приложение "само выключается", откройте консоль/логи запуска — там будет причина (порт занят, ошибка конфигурации, БД и т.д.).
+    </div>
+    <div><a href="/transport">На главную</a></div>
+</div>
+</body>
+</html>
+

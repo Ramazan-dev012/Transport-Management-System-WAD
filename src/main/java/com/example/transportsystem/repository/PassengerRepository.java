@@ -9,5 +9,8 @@ import java.util.List;
 @Repository
 public interface PassengerRepository extends JpaRepository<PassengerEntity, Long> {
     List<PassengerEntity> findByHasTicketTrue();
-}
+    List<PassengerEntity> findByHasTicketFalse();
 
+    List<PassengerEntity> findByCreatedByUsernameOrderByIdDesc(String createdByUsername);
+    List<PassengerEntity> findByCreatedByUsernameAndHasTicketFalseOrderByIdDesc(String createdByUsername);
+}

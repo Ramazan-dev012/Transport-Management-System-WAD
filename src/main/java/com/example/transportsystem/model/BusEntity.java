@@ -31,6 +31,49 @@ public class BusEntity {
         this.currentPassengers = 0;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static final class Builder {
+        private String routeNumber;
+        private int capacity;
+        private String driverName;
+        private int currentPassengers = 0;
+
+        private Builder() {
+        }
+
+        public Builder routeNumber(String routeNumber) {
+            this.routeNumber = routeNumber;
+            return this;
+        }
+
+        public Builder capacity(int capacity) {
+            this.capacity = capacity;
+            return this;
+        }
+
+        public Builder driverName(String driverName) {
+            this.driverName = driverName;
+            return this;
+        }
+
+        public Builder currentPassengers(int currentPassengers) {
+            this.currentPassengers = currentPassengers;
+            return this;
+        }
+
+        public BusEntity build() {
+            BusEntity bus = new BusEntity();
+            bus.setRouteNumber(routeNumber);
+            bus.setCapacity(capacity);
+            bus.setDriverName(driverName);
+            bus.setCurrentPassengers(currentPassengers);
+            return bus;
+        }
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -54,4 +97,3 @@ public class BusEntity {
         return capacity - currentPassengers;
     }
 }
-

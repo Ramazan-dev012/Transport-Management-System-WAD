@@ -1,27 +1,46 @@
 package com.example.transportsystem.controller;
 
+import com.example.transportsystem.model.User;
+import com.example.transportsystem.repository.UserRepository;
 import com.example.transportsystem.service.AuthService;
+import com.example.transportsystem.service.TransportManagementService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/auth")
 public class AuthController {
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private AuthService authService;
+
+    @Autowired
+    private TransportManagementService transportService;
 
     @GetMapping("/login")
     public String loginPage(@RequestParam(required = false) String error,
                             @RequestParam(required = false) String registered,
+                            @RequestParam(required = false) String expired,
                             Model model) {
         if (error != null) {
             model.addAttribute("errorMessage", "Неверный логин или пароль. Попробуйте снова.");
         }
         if (registered != null) {
             model.addAttribute("successMessage", "Регистрация прошла успешно! Теперь войдите.");
+        }
+        if (expired != null) {
+            model.addAttribute("expiredMessage", "Сессия истекла (30 сек неактивности). Войдите снова.");
         }
         return "auth/login";
     }
@@ -37,25 +56,34 @@ public class AuthController {
                                @RequestParam String password,
                                @RequestParam String confirmPassword,
                                Model model) {
-        if (username.trim().length() < 3) {
-            model.addAttribute("errorMessage", "Имя пользователя должно быть не менее 3 символов!");
-            return "auth/register";
-        }
-        if (password.length() < 6) {
-            model.addAttribute("errorMessage", "Пароль должен быть не менее 6 символов!");
-            return "auth/register";
-        }
-        if (!password.equals(confirmPassword)) {
-            model.addAttribute("errorMessage", "Пароли не совпадают!");
-            return "auth/register";
-        }
-
-        String error = authService.registerUser(username.trim(), email.trim(), password);
-        if (error != null) {
-            model.addAttribute("errorMessage", error);
+        try {
+            authService.registerUser(username, email, password, confirmPassword);
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMessage", e.getMessage());
             return "auth/register";
         }
 
         return "redirect:/auth/login?registered=true";
+    }
+
+    @GetMapping("/profile")
+    public String profile(Model model, Authentication auth, HttpSession session) {
+        String username = auth.getName();
+        model.addAttribute("username", username);
+
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        userOpt.ifPresent(user -> {
+            model.addAttribute("email", user.getEmail());
+            model.addAttribute("roles", user.getRoles());
+        });
+
+        model.addAttribute("myPassengers", transportService.getPassengersByOwner(username));
+
+        model.addAttribute("sessionId", session.getId());
+        model.addAttribute("sessionCreated",
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")));
+        model.addAttribute("authorities", auth.getAuthorities());
+
+        return "auth/profile";
     }
 }

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Transport Management System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>🚌 Transport Management System</h1>
+
+<div class="container">
+    <div class="nav">
+        <a th:href="@{/transport}">🏠 Главная</a>
+        <a th:href="@{/transport/buses}">🚌 Автобусы</a>
+        <a th:href="@{/transport/passengers}">👥 Пассажиры</a>
+        <a th:href="@{/}">← Назад</a>
+        <!-- Авторизация -->
+        <div sec:authorize="isAuthenticated()" style="margin-left:auto; display:flex; align-items:center; gap:10px;">
+            <a th:href="@{/auth/profile}" style="color:#a0aec0; font-size:14px; text-decoration:none;">👤 <span sec:authentication="name"></span></a>
+            <form th:action="@{/auth/logout}" method="post" style="margin:0;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" style="background:#e53e3e; color:#fff; padding:6px 14px; border-radius:8px; border:none; cursor:pointer; font-size:13px; font-weight:600;">Выйти</button>
+            </form>
+        </div>
+        <div sec:authorize="isAnonymous()" style="margin-left:auto; display:flex; align-items:center; gap:8px;">
+            <a th:href="@{/auth/login}" style="background:#667eea; color:#fff; padding:6px 14px; border-radius:8px; text-decoration:none; font-size:13px; font-weight:600;">Войти</a>
+            <a th:href="@{/auth/register}" style="background:#48bb78; color:#fff; padding:6px 14px; border-radius:8px; text-decoration:none; font-size:13px; font-weight:600;">Регистрация</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📊 Статистика системы</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <p>Всего автобусов</p>
+                <h3 th:text="${#lists.size(buses)}">0</h3>
+            </div>
+            <div class="stat-card">
+                <p>Всего пассажиров</p>
+                <h3 th:text="${#lists.size(passengers)}">0</h3>
+            </div>
+            <div class="stat-card">
+                <p>Общая вместимость</p>
+                <h3 th:text="${totalCapacity}">0</h3>
+            </div>
+            <div class="stat-card">
+                <p>Пассажиров с билетами</p>
+                <h3 th:text="${passengersWithTickets}">0</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>⚡ Быстрые действия</h2>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <!-- Купить билет — только авторизованным -->
+            <button class="info" sec:authorize="isAuthenticated()" onclick="location.href='/transport/buyTicket'">🎫 Купить билет</button>
+            <button class="info" sec:authorize="isAnonymous()" onclick="location.href='/auth/login'">🎫 Купить билет</button>
+            <button class="success" onclick="location.href='/transport/buses/add'">➕ Добавить автобус</button>
+            <button class="success" onclick="location.href='/transport/passengers/add'">➕ Добавить пассажира</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

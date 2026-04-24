@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Билет куплен!</title>
+    <style>
+        :root {
+            --blue: #0057b8;
+            --green: #27ae60;
+            --white: #ffffff;
+            --bg: #f4f7fc;
+            --text: #1a2744;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .ticket-container {
+            background-color: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 87, 184, 0.15);
+            text-align: center;
+            padding: 50px;
+            max-width: 520px;
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .icon {
+            font-size: 60px;
+            color: var(--green);
+            animation: popIn 0.5s 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        @keyframes popIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin: 20px 0 10px;
+        }
+        p {
+            font-size: 16px;
+            color: #6b7a99;
+            margin-bottom: 18px;
+        }
+        .copassengers {
+            text-align: left;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin: 18px 0 26px;
+        }
+        .copassengers h3 {
+            margin: 0 0 10px;
+            font-size: 14px;
+            letter-spacing: .4px;
+            text-transform: uppercase;
+            color: #475569;
+        }
+        .copassengers ul { margin: 0; padding-left: 18px; }
+        .copassengers li { margin: 4px 0; color: #1a2744; font-size: 14px; }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--blue);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 700;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .btn:hover {
+            background-color: #003f8a;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+<div class="ticket-container">
+    <div class="icon">✓</div>
+    <h1>Билет успешно куплен!</h1>
+    <p>Пассажир <strong th:text="${passengerName}">Имя</strong> добавлен в автобус на маршрут <strong th:text="${busRoute}">Номер</strong>.</p>
+
+    <div class="copassengers" th:if="${copassengers != null}">
+        <h3>Вы и ваши сопассажиры</h3>
+        <ul>
+            <li th:each="name : ${copassengers}" th:text="${name}">Имя</li>
+        </ul>
+    </div>
+
+    <a href="/transport" class="btn">На главную</a>
+</div>
+
+<script>
+    setTimeout(function() {
+        window.location.href = "/transport";
+    }, 5000); // Redirect after 5 seconds
+</script>
+
+</body>
+</html>

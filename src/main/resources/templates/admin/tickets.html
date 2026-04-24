@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{page.admin.tickets.title}">Билеты (Админ) — Transport Management System</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .admin-container { max-width: 1200px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.08); }
+        .topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+        .back-link { display:inline-block; color:#007bff; text-decoration:none; font-weight:600; }
+        .pill { display:inline-block; padding:6px 10px; border-radius:999px; background:#f1f5ff; color:#003f8a; font-size:12px; font-weight:700; }
+        .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:14px; margin-top:16px; }
+        .card { border:1px solid #e5e7eb; border-radius:10px; padding:14px; background:#fafbff; }
+        .card h3 { margin:0 0 8px; font-size:15px; }
+        .row { font-size:13px; color:#475569; margin:4px 0; }
+        table { width:100%; border-collapse: collapse; margin-top: 16px; }
+        th, td { padding: 10px 12px; border-bottom:1px solid #e5e7eb; text-align:left; }
+        th { background:#0057b8; color:#fff; font-size:12px; text-transform:uppercase; letter-spacing:.5px; }
+        tr:hover td { background:#f8fafc; }
+        .empty { padding:20px; text-align:center; color:#64748b; }
+    </style>
+</head>
+<body>
+<div class="admin-container">
+    <div class="topbar">
+        <a class="back-link" th:href="@{/admin/users}">← <span th:text="#{admin.panel}">Админ-панель</span></a>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <span class="pill" th:text="#{admin.tickets.freeBusesCount} + ' ' + ${availableBusesCount}">Свободных автобусов: 0</span>
+            <span class="pill" th:text="#{admin.tickets.fullBusesCount} + ' ' + ${fullBusesCount}">Заполненных автобусов: 0</span>
+            <span class="pill" th:text="#{admin.tickets.ticketsCount} + ' ' + ${ticketsCount}">Билетов: 0</span>
+        </div>
+    </div>
+
+    <h2 style="margin-top:14px;">🎫 <span th:text="#{admin.tickets.onlyAdmin}">Билеты (только администратор)</span></h2>
+
+    <h3 style="margin-top:18px;">🟢 <span th:text="#{admin.tickets.freeBuses}">Свободные автобусы</span></h3>
+    <div th:if="${#lists.isEmpty(availableBuses)}" class="empty" th:text="#{tickets.empty.availableBuses}">Нет свободных автобусов</div>
+    <div th:unless="${#lists.isEmpty(availableBuses)}" class="grid">
+        <div class="card" th:each="bus : ${availableBuses}">
+            <h3 th:text="#{tickets.bus.route} + ' ' + ${bus.routeNumber}">Маршрут</h3>
+            <div class="row"><span th:text="#{tickets.bus.driver}">Водитель</span>: <b th:text="${bus.driverName}">—</b></div>
+            <div class="row"><span th:text="#{tickets.bus.seats}">Места</span>: <b th:text="${bus.currentPassengers} + ' / ' + ${bus.capacity}">—</b></div>
+            <div class="row"><span th:text="#{tickets.bus.freeSeats}">Свободно</span>: <b th:text="${bus.capacity - bus.currentPassengers}">—</b></div>
+        </div>
+    </div>
+
+    <h3 style="margin-top:18px;">🔴 <span th:text="#{admin.tickets.fullBuses}">Заполненные автобусы</span></h3>
+    <div th:if="${#lists.isEmpty(fullBuses)}" class="empty" th:text="#{tickets.empty.fullBuses}">Нет заполненных автобусов</div>
+    <div th:unless="${#lists.isEmpty(fullBuses)}" class="grid">
+        <div class="card" th:each="bus : ${fullBuses}">
+            <h3 th:text="#{tickets.bus.route} + ' ' + ${bus.routeNumber}">Маршрут</h3>
+            <div class="row"><span th:text="#{tickets.bus.driver}">Водитель</span>: <b th:text="${bus.driverName}">—</b></div>
+            <div class="row"><span th:text="#{tickets.bus.passengers}">Пассажиры</span>: <b th:text="${bus.currentPassengers} + ' / ' + ${bus.capacity}">—</b></div>
+        </div>
+    </div>
+
+    <h3 style="margin-top:18px;">🎟 <span th:text="#{tickets.purchasedTickets}">Купленные билеты</span></h3>
+    <div th:if="${#lists.isEmpty(passengersWithTickets)}" class="empty" th:text="#{tickets.empty.purchased}">Купленных билетов пока нет</div>
+    <table th:unless="${#lists.isEmpty(passengersWithTickets)}">
+        <thead>
+        <tr>
+            <th th:text="#{tickets.table.passenger}">Пассажир</th>
+            <th th:text="#{tickets.table.phone}">Телефон</th>
+            <th th:text="#{tickets.table.destination}">Пункт назначения</th>
+            <th th:text="#{tickets.table.status}">Статус</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${passengersWithTickets}">
+            <td th:text="${p.name}">—</td>
+            <td th:text="${p.phoneNumber}">—</td>
+            <td th:text="${p.destination}">—</td>
+            <td th:text="#{tickets.status.paid}">Оплачен</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

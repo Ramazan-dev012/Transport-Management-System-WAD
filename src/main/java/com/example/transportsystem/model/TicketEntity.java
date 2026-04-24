@@ -34,6 +34,39 @@ public class TicketEntity {
         this.purchasedAt = LocalDateTime.now();
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static final class Builder {
+        private PassengerEntity passenger;
+        private BusEntity bus;
+        private Integer seatNumber;
+
+        private Builder() {
+        }
+
+        public Builder passenger(PassengerEntity passenger) {
+            this.passenger = passenger;
+            return this;
+        }
+
+        public Builder bus(BusEntity bus) {
+            this.bus = bus;
+            return this;
+        }
+
+        public Builder seatNumber(int seatNumber) {
+            this.seatNumber = seatNumber;
+            return this;
+        }
+
+        public TicketEntity build() {
+            int seat = seatNumber == null ? 0 : seatNumber;
+            return new TicketEntity(passenger, bus, seat);
+        }
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -49,4 +82,3 @@ public class TicketEntity {
     public int getSeatNumber() { return seatNumber; }
     public void setSeatNumber(int seatNumber) { this.seatNumber = seatNumber; }
 }
-
